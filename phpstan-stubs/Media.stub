@@ -1,0 +1,14 @@
+<?php
+
+namespace Spatie\MediaLibrary\MediaCollections\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+/**
+ * @property string $collection_name
+ * @property string $file_name
+ * @property array $custom_properties
+ * @property-read string $type attribute
+ */
+class Media extends Model {}
+

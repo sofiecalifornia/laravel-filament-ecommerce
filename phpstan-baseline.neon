@@ -1,0 +1,106 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Class App\\\\Casts\\\\MoneyCast implements generic interface Illuminate\\\\Contracts\\\\Database\\\\Eloquent\\\\CastsAttributes but does not specify its types\\: TGet, TSet$#"
+			count: 1
+			path: app/Casts/MoneyCast.php
+
+		-
+			message: "#^Method App\\\\Filament\\\\Resources\\\\Access\\\\RoleResource\\\\Schema\\\\PermissionSchema\\:\\:permissionGroup\\(\\) should return Illuminate\\\\Support\\\\Collection\\<string, Illuminate\\\\Support\\\\Collection\\<int, App\\\\Filament\\\\Resources\\\\Access\\\\RoleResource\\\\Support\\\\PermissionData\\>\\> but returns Illuminate\\\\Support\\\\Collection\\<\\(int\\|string\\), Illuminate\\\\Support\\\\Collection\\<\\(int\\|string\\), App\\\\Filament\\\\Resources\\\\Access\\\\RoleResource\\\\Support\\\\PermissionData\\>\\>\\.$#"
+			count: 1
+			path: app/Filament/Resources/Access/RoleResource/Schema/PermissionSchema.php
+
+		-
+			message: "#^Parameter \\#1 \\$callback of method Illuminate\\\\Database\\\\Eloquent\\\\Collection\\<\\(int\\|string\\),Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\:\\:map\\(\\) expects callable\\(Illuminate\\\\Database\\\\Eloquent\\\\Model, int\\|string\\)\\: App\\\\Filament\\\\Resources\\\\Access\\\\RoleResource\\\\Support\\\\PermissionData, Closure\\(Domain\\\\Access\\\\Role\\\\Models\\\\Permission\\)\\: App\\\\Filament\\\\Resources\\\\Access\\\\RoleResource\\\\Support\\\\PermissionData given\\.$#"
+			count: 1
+			path: app/Filament/Resources/Access/RoleResource/Schema/PermissionSchema.php
+
+		-
+			message: "#^Call to an undefined method Filament\\\\Forms\\\\Components\\\\Select\\:\\:optionsFromEnum\\(\\)\\.$#"
+			count: 1
+			path: app/Filament/Resources/Shop/BranchResource.php
+
+		-
+			message: "#^Call to an undefined method Filament\\\\Tables\\\\Filters\\\\SelectFilter\\:\\:optionsFromEnum\\(\\)\\.$#"
+			count: 1
+			path: app/Filament/Resources/Shop/BranchResource.php
+
+		-
+			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\:\\:whereParent\\(\\)\\.$#"
+			count: 1
+			path: app/Filament/Resources/Shop/CategoryResource.php
+
+		-
+			message: "#^Call to an undefined method Filament\\\\Tables\\\\Filters\\\\SelectFilter\\:\\:optionsFromEnum\\(\\)\\.$#"
+			count: 1
+			path: app/Filament/Resources/Shop/CustomerResource.php
+
+		-
+			message: "#^Call to an undefined method Filament\\\\Forms\\\\Components\\\\Select\\:\\:optionsFromEnum\\(\\)\\.$#"
+			count: 2
+			path: app/Filament/Resources/Shop/CustomerResource/Schema/CustomerSchema.php
+
+		-
+			message: "#^Call to an undefined method Filament\\\\Forms\\\\Components\\\\Select\\:\\:optionsFromEnum\\(\\)\\.$#"
+			count: 3
+			path: app/Filament/Resources/Shop/OrderResource.php
+
+		-
+			message: "#^Call to an undefined method Filament\\\\Tables\\\\Filters\\\\SelectFilter\\:\\:optionsFromEnum\\(\\)\\.$#"
+			count: 2
+			path: app/Filament/Resources/Shop/OrderResource.php
+
+		-
+			message: "#^Call to an undefined method Filament\\\\Forms\\\\Components\\\\Select\\:\\:optionsFromEnum\\(\\)\\.$#"
+			count: 3
+			path: app/Filament/Resources/Shop/OrderResource/Schema/OrderSchema.php
+
+		-
+			message: "#^Call to an undefined method Filament\\\\Forms\\\\Components\\\\Radio\\:\\:optionsFromEnum\\(\\)\\.$#"
+			count: 1
+			path: app/Filament/Resources/Shop/ProductResource.php
+
+		-
+			message: "#^Call to an undefined method Filament\\\\Tables\\\\Filters\\\\SelectFilter\\:\\:optionsFromEnum\\(\\)\\.$#"
+			count: 1
+			path: app/Filament/Resources/Shop/SkuStockResource.php
+
+		-
+			message: "#^Call to an undefined method Filament\\\\Forms\\\\Components\\\\Radio\\:\\:optionsFromEnum\\(\\)\\.$#"
+			count: 1
+			path: app/Filament/Resources/Shop/SkuStockResource/Schema/SkuStockSchema.php
+
+		-
+			message: "#^Call to an undefined method Spatie\\\\Permission\\\\Contracts\\\\Role\\:\\:syncPermissions\\(\\)\\.$#"
+			count: 4
+			path: database/seeders/Auth/RoleSeeder.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of static method Illuminate\\\\Support\\\\Str\\:\\:of\\(\\) expects string, class\\-string\\<Domain\\\\Access\\\\Role\\\\Contracts\\\\HasPermissionPage\\>\\|Domain\\\\Access\\\\Role\\\\Contracts\\\\HasPermissionPage given\\.$#"
+			count: 1
+			path: domain/Access/Role/Support.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of static method Illuminate\\\\Support\\\\Str\\:\\:of\\(\\) expects string, class\\-string\\<Domain\\\\Access\\\\Role\\\\Contracts\\\\HasPermissionWidgets\\>\\|Domain\\\\Access\\\\Role\\\\Contracts\\\\HasPermissionWidgets given\\.$#"
+			count: 1
+			path: domain/Access/Role/Support.php
+
+		-
+			message: "#^Class Domain\\\\Shop\\\\Category\\\\Models\\\\Query\\\\CategoryQueryBuilder extends generic class Illuminate\\\\Database\\\\Eloquent\\\\Builder but does not specify its types\\: TModelClass$#"
+			count: 1
+			path: domain/Shop/Category/Models/Query/CategoryQueryBuilder.php
+
+		-
+			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\HasMany\\<Domain\\\\Shop\\\\Category\\\\Models\\\\Category\\>\\:\\:withTrashed\\(\\)\\.$#"
+			count: 1
+			path: domain/Shop/Category/Observers/CategoryObserver.php
+
+		-
+			message: "#^Method Domain\\\\Shop\\\\Product\\\\Database\\\\Factories\\\\ProductFactory\\:\\:hasSku\\(\\) has parameter \\$branches with generic class Illuminate\\\\Database\\\\Eloquent\\\\Collection but does not specify its types\\: TKey, TModel$#"
+			count: 1
+			path: domain/Shop/Product/Database/Factories/ProductFactory.php
+
+		-
+			message: "#^Method Domain\\\\Shop\\\\Product\\\\Database\\\\Factories\\\\SkuFactory\\:\\:withDefaultData\\(\\) has parameter \\$branches with generic class Illuminate\\\\Database\\\\Eloquent\\\\Collection but does not specify its types\\: TKey, TModel$#"
+			count: 1
+			path: domain/Shop/Product/Database/Factories/SkuFactory.php

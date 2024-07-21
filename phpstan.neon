@@ -1,0 +1,103 @@
+includes:
+    - phpstan-baseline.neon
+
+services:
+    -
+     class: Vural\LarastanStrictRules\Rules\NoLocalQueryScopeRule
+     tags:
+         - phpstan.rules.rule
+    -
+     class: Vural\LarastanStrictRules\Rules\NoPropertyAccessorRule
+     tags:
+         - phpstan.rules.rule
+    -
+     class: Vural\LarastanStrictRules\Rules\NoValidationInControllerRule
+     tags:
+         - phpstan.rules.rule
+    -
+     class: Vural\LarastanStrictRules\Rules\NoGlobalLaravelFunctionRule
+     tags:
+         - phpstan.rules.rule
+     arguments:
+        allowedFunctions:
+        # Path
+            - app_path
+            - base_path
+            - config_path
+            - database_path
+            - lang_path
+            - public_path
+            - resource_path
+            - storage_path
+        # String
+            - class_basename
+        # Route
+            - asset
+            - route
+        # Misc
+            - abort
+            - abort_if
+            - abort_unless
+            - app
+            - blank
+            - class_uses_recursive
+            - collect
+            - csrf_field
+            - csrf_token
+            - method_field
+            - now
+            - old
+            - redirect
+            - report
+            - response
+            - tap
+            - throw_if
+            - throw_unless
+            - trait_uses_recursive
+            - view
+            # additional
+            - config
+            - fake
+            - event
+            - trans
+            - filled
+            - url
+            - retry
+
+parameters:
+
+    tmpDir: build/phpstan
+
+    stubFiles:
+        - phpstan-stubs/Media.stub
+        - phpstan-stubs/HasMedia.stub
+
+    paths:
+        - app/
+        - database/
+        - domain/
+
+    excludePaths:
+        - database/migrations/
+
+    # Level 9 is the highest level
+    level: 8
+
+    earlyTerminatingFunctionCalls:
+        - rd
+        - dd
+
+    checkMissingIterableValueType: false
+    checkAlwaysTrueInstanceof: true
+
+    # larastan
+
+    noModelMake: true
+    noUnnecessaryCollectionCall: true
+    checkModelProperties: true # beta v2.6.4 https://github.com/nunomaduro/larastan/blob/v2.6.4/docs/rules.md#modelpropertyrule
+    checkOctaneCompatibility: true
+    # relationExistenceRule: true
+    # checkDispatchArgumentTypesCompatibleWithClassConstructorRule
+
+    databaseMigrationsPath:
+        - database/settings

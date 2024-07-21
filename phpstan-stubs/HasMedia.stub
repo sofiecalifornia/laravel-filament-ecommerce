@@ -1,0 +1,10 @@
+<?php
+
+namespace Spatie\MediaLibrary;
+
+/**
+ * @method \Illuminate\Support\Collection<int, \Spatie\MediaLibrary\MediaCollections\MediaCollection> getRegisteredMediaCollections()
+ * @method \Spatie\MediaLibrary\MediaCollections\FileAdder addMediaFromUrl(string $url, array|string ...$allowedMimeTypes)
+ */
+interface HasMedia
+{}

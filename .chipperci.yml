@@ -1,0 +1,26 @@
+# File .chipperci.yml, which goes in the root of your repository
+version: 1
+
+environment:
+  php: 8.2    # 7.1, 7.2, 7.3, 7.4, 8.0, 8.1, 8.2
+  node: 16    # 6, 8, 10, 12, 14, 16, 18
+
+#services:
+#  - mysql: 5.7
+
+pipeline:
+  - name: Setup
+    cmd: |
+      cp -v .env.example .env
+      composer install --no-interaction --prefer-dist --optimize-autoloader
+      php artisan key:generate
+
+  - name: Show Installed
+    cmd: |
+      php -v
+      composer show -D -f json
+
+  - name: Run Tests
+    cmd: |
+      sudo phpenmod pcov
+      vendor/bin/pest --parallel --ci --coverage
