@@ -17,6 +17,7 @@ class CategoryFactory extends Factory
 
     protected $model = Category::class;
 
+    #[\Override]
     public function definition(): array
     {
         return [

@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\Shop;
 
+use App\Http\Resources\BaseJsonApiResource;
 use Illuminate\Http\Request;
-use TiMacDonald\JsonApi\JsonApiResource;
 
 /**
  * @property-read \Domain\Shop\ORder\Models\OrderItem $resource
  */
-class OrderItemResource extends JsonApiResource
+class OrderItemResource extends BaseJsonApiResource
 {
+    #[\Override]
     public function toAttributes(Request $request): array
     {
         return [
@@ -20,6 +21,7 @@ class OrderItemResource extends JsonApiResource
     }
 
     /** @return array<string, callable> */
+    #[\Override]
     public function toRelationships(Request $request)
     {
         return [

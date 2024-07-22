@@ -17,6 +17,7 @@ class BrandFactory extends Factory
 
     protected $model = Brand::class;
 
+    #[\Override]
     public function definition(): array
     {
         return [

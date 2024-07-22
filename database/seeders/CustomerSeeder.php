@@ -17,10 +17,10 @@ class CustomerSeeder extends Seeder
             ->active()
             ->has(AddressFactory::new())
             ->createOne([
-                'gender' => Gender::MALE,
+                'gender' => Gender::male,
                 'first_name' => 'Lloric',
                 'last_name' => 'Garcia',
-                'email' => 'lloricode@gmail.com',
+                'email' => 'ecommerce@lloricode.com',
                 'password' => 'secret',
             ]);
     }

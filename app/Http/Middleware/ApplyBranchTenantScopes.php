@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
-use App\Filament\Support\TenantHelper;
+use App\Filament\Admin\Support\TenantHelper;
 use Closure;
 use Domain\Shop\Order\Models\Order;
 use Domain\Shop\Stock\Models\SkuStock;

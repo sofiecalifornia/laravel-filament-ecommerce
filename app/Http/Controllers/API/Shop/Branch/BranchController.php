@@ -7,17 +7,28 @@ namespace App\Http\Controllers\API\Shop\Branch;
 use App\Http\Resources\Shop\BranchResource;
 use Domain\Shop\Branch\Enums\Status;
 use Domain\Shop\Branch\Models\Branch;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Spatie\QueryBuilder\QueryBuilder;
-use Spatie\RouteAttributes\Attributes\Get;
+use Spatie\RouteAttributes\Attributes\Resource;
 
+#[Resource('branches', only: ['index', 'show'])]
 class BranchController
 {
-    #[Get('branches', name: 'branches.index')]
-    public function __invoke(): mixed
+    /**
+     * @unauthenticated
+     *
+     * @return AnonymousResourceCollection<LengthAwarePaginator<BranchResource>>
+     */
+    public function index(): mixed
     {
         return BranchResource::collection(
             QueryBuilder::for(
-                Branch::whereStatus(Status::ENABLED)
+                Branch::whereStatus(Status::enabled)
+                    ->with([
+                        'operationHoursOnline',
+                        'operationHoursInStore',
+                    ])
             )
                 ->allowedIncludes(['media'])
                 ->allowedSorts([
@@ -27,6 +38,22 @@ class BranchController
                 ])
                 ->defaultSort(config('eloquent-sortable.order_column_name'))
                 ->jsonPaginate()
+        );
+    }
+
+    public function show(string $branch): mixed
+    {
+        return BranchResource::make(
+            QueryBuilder::for(
+                Branch::whereStatus(Status::enabled)
+                    ->where((new Branch())->getRouteKeyName(), $branch)
+                    ->with([
+                        'operationHoursOnline',
+                        'operationHoursInStore',
+                    ])
+            )
+                ->allowedIncludes(['media'])
+                ->firstOrFail()
         );
     }
 }

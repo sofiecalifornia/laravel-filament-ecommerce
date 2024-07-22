@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\Shop;
 
+use App\Http\Resources\BaseJsonApiResource;
 use App\Http\Resources\MediaResource;
 use Illuminate\Http\Request;
-use TiMacDonald\JsonApi\JsonApiResource;
 
 /**
  * @property-read \Domain\Shop\Category\Models\Category $resource
  */
-class CategoryResource extends JsonApiResource
+class CategoryResource extends BaseJsonApiResource
 {
+    #[\Override]
     public function toAttributes(Request $request): array
     {
         return [
@@ -22,7 +23,8 @@ class CategoryResource extends JsonApiResource
     }
 
     /** @return array<string, callable> */
-    public function toRelationships(Request $request)
+    #[\Override]
+    public function toRelationships(Request $request): array
     {
         return [
             'parent' => fn () => self::make(

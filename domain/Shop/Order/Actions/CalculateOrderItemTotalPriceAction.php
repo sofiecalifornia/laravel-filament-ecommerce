@@ -13,10 +13,10 @@ final readonly class CalculateOrderItemTotalPriceAction
     {
         $quantity = $item->quantity;
 
-        if ($item->minimum !== null && $quantity < $item->minimum) {
+        if (null !== $item->minimum && $quantity < $item->minimum) {
             $quantity = $item->minimum;
         }
 
-        return money($item->price)->multiply($quantity);
+        return $item->price->multiply($quantity);
     }
 }

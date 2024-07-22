@@ -9,20 +9,32 @@ use Domain\Access\Role\Contracts\HasPermissionWidgets;
 use Domain\Access\Role\Support;
 use Exception;
 use Filament\Facades\Filament;
+use Filament\Panel;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
 
-class PermissionSeeder extends \Domain\Access\Role\Database\Seeders\PermissionSeeder
+final class PermissionSeeder extends \Domain\Access\Role\Database\Seeders\PermissionSeeder
 {
     /** @throws Exception */
+    #[\Override]
     protected function permissionsByGuard(): array
     {
         return [
-            'admin' => $this->getPermissionsFromResourceModelPolicies()
-                ->merge($this->getPermissionsFromWidgets())
-                ->merge($this->getPermissionsFromPages())
+            'admin' => self::getPermissionsFromPanels()
+                ->merge(self::getPermissionsFromResourceModelPolicies())
+                ->merge(self::getPermissionsFromWidgets())
+                ->merge(self::getPermissionsFromPages())
                 ->toArray(),
         ];
+    }
+
+    /** @return \Illuminate\Support\Collection<int, string> */
+    private static function getPermissionsFromPanels(): Collection
+    {
+        return collect(Filament::getPanels())
+            ->map(fn (Panel $panel) => Support::getPanelPermissionName($panel))
+            ->prepend(Support::PANELS)
+            ->values();
     }
 
     /** @return \Illuminate\Support\Collection<int, string> */

@@ -10,8 +10,10 @@ use Laravel\Telescope\IncomingEntry;
 use Laravel\Telescope\Telescope;
 use Laravel\Telescope\TelescopeApplicationServiceProvider;
 
+/** @codeCoverageIgnore  */
 class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
 {
+    #[\Override]
     public function register(): void
     {
         Telescope::night();
@@ -47,6 +49,7 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
         ]);
     }
 
+    #[\Override]
     protected function gate(): void
     {
         Gate::define('viewTelescope', fn (Admin $user): bool => $user->isSuperAdmin());

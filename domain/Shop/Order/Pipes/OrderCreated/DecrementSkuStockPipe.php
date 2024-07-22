@@ -7,7 +7,7 @@ namespace Domain\Shop\Order\Pipes\OrderCreated;
 use Domain\Shop\Order\DataTransferObjects\OrderPipelineData;
 use Domain\Shop\Stock\Actions\DecrementSkuStockAction;
 
-class DecrementSkuStockPipe
+readonly class DecrementSkuStockPipe
 {
     public function __construct(private DecrementSkuStockAction $decrementSkuStockAction)
     {

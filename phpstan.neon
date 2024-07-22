@@ -60,34 +60,45 @@ services:
             - fake
             - event
             - trans
+            - trans_choice
             - filled
             - url
             - retry
+            - once
+
+rules:
+    - Spatie\Ray\PHPStan\RemainingRayCallRule
 
 parameters:
+
+    # Level 9 is the highest level
+    level: 8
 
     tmpDir: build/phpstan
 
     stubFiles:
-        - phpstan-stubs/Media.stub
         - phpstan-stubs/HasMedia.stub
+        - phpstan-stubs/Tag.stub
+        - phpstan-stubs/filament/TextInput.stub
 
     paths:
         - app/
         - database/
         - domain/
+        - routes/
+        - support/
 
     excludePaths:
         - database/migrations/
+        - routes/console.php
 
-    # Level 9 is the highest level
-    level: 8
+    ignoreErrors:
+        - identifier: missingType.iterableValue
 
     earlyTerminatingFunctionCalls:
         - rd
         - dd
 
-    checkMissingIterableValueType: false
     checkAlwaysTrueInstanceof: true
 
     # larastan
@@ -101,3 +112,5 @@ parameters:
 
     databaseMigrationsPath:
         - database/settings
+
+    noEnvCallsOutsideOfConfig: true

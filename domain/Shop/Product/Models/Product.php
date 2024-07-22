@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Domain\Shop\Product\Models;
 
-use App\Helpers;
 use Domain\Shop\Brand\Models\Brand;
 use Domain\Shop\Category\Models\Category;
 use Domain\Shop\Product\Enums\Status;
+use Domain\Shop\Product\Models\EloquentBuilder\ProductEloquentBuilder;
+use Domain\Shop\Product\Observers\ProductObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -16,92 +19,97 @@ use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
-use Spatie\Image\Manipulations;
+use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
-use Spatie\Sluggable\HasSlug;
-use Spatie\Sluggable\SlugOptions;
+use Spatie\Tags\HasTags;
 
 /**
  * Domain\Shop\Product\Models\Product
  *
- * @property int $id
- * @property int|null $category_id
- * @property int|null $brand_id
+ * @property string $uuid
+ * @property string|null $category_uuid
+ * @property string|null $brand_uuid
  * @property string $parent_sku
  * @property string $name
  * @property string|null $description
  * @property \Domain\Shop\Product\Enums\Status $status PHP backed enum
- * @property string $slug
  * @property int $order_column manage by spatie/eloquent-sortable
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\Activitylog\Models\Activity> $activities
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Spatie\Activitylog\Models\Activity[] $activities
  * @property-read int|null $activities_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Domain\Shop\Product\Models\Attribute[] $attributes
+ * @property-read int|null $attributes_count
  * @property-read \Domain\Shop\Brand\Models\Brand|null $brand
  * @property-read \Domain\Shop\Category\Models\Category|null $category
- * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
+ * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection|\Spatie\MediaLibrary\MediaCollections\Models\Media[] $media
  * @property-read int|null $media_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Domain\Shop\Product\Models\Sku> $skus
+ * @property \Illuminate\Database\Eloquent\Collection|\Spatie\Tags\Tag[] $tags
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Domain\Shop\Product\Models\Sku[] $skus
  * @property-read int|null $skus_count
+ * @property-read int|null $tags_count
  *
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Product\Models\Product newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Product\Models\Product newQuery()
+ * @method static \Domain\Shop\Product\Models\EloquentBuilder\ProductEloquentBuilder|\Domain\Shop\Product\Models\Product newModelQuery()
+ * @method static \Domain\Shop\Product\Models\EloquentBuilder\ProductEloquentBuilder|\Domain\Shop\Product\Models\Product newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Product\Models\Product onlyTrashed()
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Product\Models\Product ordered(string $direction = 'asc')
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Product\Models\Product query()
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Product\Models\Product whereBrandId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Product\Models\Product whereCategoryId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Product\Models\Product whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Product\Models\Product whereDeletedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Product\Models\Product whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Product\Models\Product whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Product\Models\Product whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Product\Models\Product whereOrderColumn($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Product\Models\Product whereParentSku($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Product\Models\Product whereSlug($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Product\Models\Product whereStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Product\Models\Product whereUpdatedAt($value)
+ * @method static \Domain\Shop\Product\Models\EloquentBuilder\ProductEloquentBuilder|\Domain\Shop\Product\Models\Product ordered(string $direction = 'asc')
+ * @method static \Domain\Shop\Product\Models\EloquentBuilder\ProductEloquentBuilder|\Domain\Shop\Product\Models\Product query()
+ * @method static \Domain\Shop\Product\Models\EloquentBuilder\ProductEloquentBuilder|\Domain\Shop\Product\Models\Product whereBaseOnStocksIsWarning()
+ * @method static \Domain\Shop\Product\Models\EloquentBuilder\ProductEloquentBuilder|\Domain\Shop\Product\Models\Product whereBaseOnStocksNotZero()
+ * @method static \Domain\Shop\Product\Models\EloquentBuilder\ProductEloquentBuilder|\Domain\Shop\Product\Models\Product withAllTags(\ArrayAccess|\Spatie\Tags\Tag|array|string $tags, ?string $type = null)
+ * @method static \Domain\Shop\Product\Models\EloquentBuilder\ProductEloquentBuilder|\Domain\Shop\Product\Models\Product withAllTagsOfAnyType($tags)
+ * @method static \Domain\Shop\Product\Models\EloquentBuilder\ProductEloquentBuilder|\Domain\Shop\Product\Models\Product withAnyTags(\ArrayAccess|\Spatie\Tags\Tag|array|string $tags, ?string $type = null)
+ * @method static \Domain\Shop\Product\Models\EloquentBuilder\ProductEloquentBuilder|\Domain\Shop\Product\Models\Product withAnyTagsOfAnyType($tags)
  * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Product\Models\Product withTrashed()
+ * @method static \Domain\Shop\Product\Models\EloquentBuilder\ProductEloquentBuilder|\Domain\Shop\Product\Models\Product withoutTags(\ArrayAccess|\Spatie\Tags\Tag|array|string $tags, ?string $type = null)
  * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Product\Models\Product withoutTrashed()
  *
  * @mixin \Eloquent
  */
+#[ObservedBy(ProductObserver::class)]
 class Product extends Model implements HasMedia, Sortable
 {
-    use HasSlug;
+    use HasTags;
+    use HasUuids;
     use InteractsWithMedia;
     use LogsActivity;
     use SoftDeletes;
     use SortableTrait;
 
+    protected $primaryKey = 'uuid';
+
     /** @var array<int, non-empty-string> */
     protected $fillable = [
-        'category_id',
-        'brand_id',
+        'category_uuid',
+        'brand_uuid',
         'parent_sku',
         'name',
         'description',
         'status',
     ];
 
-    protected $casts = [
-        'status' => Status::class,
-    ];
-
-    public function getRouteKeyName(): string
+    #[\Override]
+    protected function casts(): array
     {
-        return 'slug';
+        return [
+            'status' => Status::class,
+        ];
     }
 
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->useLogName(Helpers::getCurrentAuthDriver())
             ->logFillable()
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();
+    }
+
+    #[\Override]
+    public function newEloquentBuilder($query): ProductEloquentBuilder
+    {
+        return new ProductEloquentBuilder($query);
     }
 
     /** @return \Illuminate\Database\Eloquent\Relations\HasMany<\Domain\Shop\Product\Models\Sku> */
@@ -110,22 +118,16 @@ class Product extends Model implements HasMedia, Sortable
         return $this->hasMany(Sku::class);
     }
 
-    public function getSlugOptions(): SlugOptions
-    {
-        return SlugOptions::create()
-            ->generateSlugsFrom('name')
-            ->saveSlugsTo($this->getRouteKeyName());
-    }
-
+    #[\Override]
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('image')
             ->useFallbackUrl(asset('images/no-image.webp'))
             ->registerMediaConversions(function () {
                 $this->addMediaConversion('list')
-                    ->fit(Manipulations::FIT_FILL, 240, 210);
+                    ->fit(Fit::Fill, 240, 210);
                 $this->addMediaConversion('thumb')
-                    ->fit(Manipulations::FIT_FILL, 40, 40);
+                    ->fit(Fit::Fill, 40, 40);
             });
     }
 
@@ -139,5 +141,11 @@ class Product extends Model implements HasMedia, Sortable
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    /** @return \Illuminate\Database\Eloquent\Relations\HasMany<\Domain\Shop\Product\Models\Attribute> */
+    public function attributes(): HasMany
+    {
+        return $this->hasMany(Attribute::class);
     }
 }

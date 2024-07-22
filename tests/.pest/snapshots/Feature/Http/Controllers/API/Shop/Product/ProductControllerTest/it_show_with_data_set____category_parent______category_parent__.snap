@@ -1,1 +1,1 @@
-{"data":{"id":"samsung-galaxy-s21","type":"products","attributes":{"parent_sku":"sku sample","name":"Samsung Galaxy S21","description":"sample description","status":"in-stock"},"relationships":{"category":{"data":null,"meta":{},"links":{}}},"meta":{},"links":{}},"included":[],"jsonapi":{"version":"1.0","meta":{}}}
+{"data":{"id":"9b9b3d43-a775-4cd1-8454-e405e2fea459","type":"products","attributes":{"parent_sku":"sku sample","name":"Samsung Galaxy S21","description":"sample description","status":"in_stock"},"relationships":{"category":{"data":null}}}}

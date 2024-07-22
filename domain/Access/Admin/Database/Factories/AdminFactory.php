@@ -15,17 +15,25 @@ class AdminFactory extends Factory
 {
     protected $model = Admin::class;
 
+    #[\Override]
     public function definition(): array
     {
         return [
-            'admin_id' => 1,
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => app()->environment('local', 'testing') ? 'secret' : fake()->password(minLength: 15),
             'remember_token' => Str::random(10),
-            'timezone' => 'Asia/Manila',
+            'timezone' => config('app-default.timezone'),
+            'google2fa_secret' => null,
         ];
+    }
+
+    public function withGoogle2fa(): self
+    {
+        return $this->state([
+            'google2fa_secret' => '3CMLPJRWJOYEDEQL',
+        ]);
     }
 
     public function unverified(): self

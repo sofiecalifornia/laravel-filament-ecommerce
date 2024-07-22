@@ -11,22 +11,22 @@ use Illuminate\Support\Str;
 
 enum Status: string implements HasColor, HasIcon, HasLabel
 {
-    case ENABLED = 'enabled';
-    case DISABLED = 'disabled';
+    case enabled = 'enabled';
+    case disabled = 'disabled';
 
     public function getColor(): string|array|null
     {
         return match ($this) {
-            self::ENABLED => 'success',
-            self::DISABLED => 'danger',
+            self::enabled => 'success',
+            self::disabled => 'danger',
         };
     }
 
     public function getIcon(): ?string
     {
         return match ($this) {
-            self::ENABLED => 'heroicon-o-check-circle',
-            self::DISABLED => 'heroicon-o-x-circle',
+            self::enabled => 'heroicon-o-check-circle',
+            self::disabled => 'heroicon-o-x-circle',
         };
     }
 

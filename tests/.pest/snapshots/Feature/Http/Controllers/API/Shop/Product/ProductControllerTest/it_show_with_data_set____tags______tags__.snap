@@ -1,0 +1,1 @@
+{"data":{"id":"9b9b3d43-a775-4cd1-8454-e405e2fea459","type":"products","attributes":{"parent_sku":"sku sample","name":"Samsung Galaxy S21","description":"sample description","status":"in_stock"},"relationships":{"tags":{"data":[{"type":"tags","id":"1"}]}}},"included":[{"id":"1","type":"tags","attributes":{"name":"test tag"}}]}

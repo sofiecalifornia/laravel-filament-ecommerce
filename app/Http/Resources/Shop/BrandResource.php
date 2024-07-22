@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\Shop;
 
+use App\Http\Resources\BaseJsonApiResource;
 use App\Http\Resources\MediaResource;
 use Illuminate\Http\Request;
-use TiMacDonald\JsonApi\JsonApiResource;
 
 /**
  * @property-read \Domain\Shop\Brand\Models\Brand $resource
  */
-class BrandResource extends JsonApiResource
+class BrandResource extends BaseJsonApiResource
 {
+    #[\Override]
     public function toAttributes(Request $request): array
     {
         return [
@@ -21,7 +22,8 @@ class BrandResource extends JsonApiResource
     }
 
     /** @return array<string, callable> */
-    public function toRelationships(Request $request)
+    #[\Override]
+    public function toRelationships(Request $request): array
     {
         return [
             'media' => fn () => MediaResource::collection(

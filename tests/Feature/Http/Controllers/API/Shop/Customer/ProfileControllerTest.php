@@ -15,8 +15,8 @@ it('fetch current customer account', function () {
         ->assertJson(function (AssertableJson $json) use ($customer) {
             $json
                 ->where('data.type', 'customers')
-                ->where('data.id', $customer->reference_number)
-                ->where('data.attributes.reference_number', $customer->reference_number)
+                ->where('data.id', $customer->uuid)
+                ->where('data.attributes.uuid', $customer->uuid)
                 ->where('data.attributes.email', $customer->email)
                 ->where('data.attributes.first_name', $customer->first_name)
                 ->where('data.attributes.last_name', $customer->last_name)

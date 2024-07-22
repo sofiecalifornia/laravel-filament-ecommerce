@@ -12,7 +12,7 @@ final readonly class CreateCartData
     public function __construct(
         public Branch $branch,
         public Customer $customer,
-        public string $sku_id,
+        public string $sku_uuid,
         public float $quantity,
     ) {
     }

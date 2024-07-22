@@ -16,7 +16,11 @@ use Spatie\RouteAttributes\Attributes\Prefix;
 #[Prefix('customers')]
 class RegisterController
 {
-    /** @operationId registration */
+    /**
+     * @unauthenticated
+     *
+     * @operationId registration
+     */
     #[Post('register', name: 'customers.register')]
     public function __invoke(RegisterRequest $request): CustomerResource
     {

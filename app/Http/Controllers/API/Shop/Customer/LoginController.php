@@ -31,10 +31,10 @@ class LoginController
         }
 
         $customer = Customer::whereEmail($request->validated('email'))
-            ->whereStatus(Status::ACTIVE)
+            ->whereStatus(Status::active)
             ->first();
 
-        if ($customer === null) {
+        if (null === $customer) {
             throw new AuthenticationException(trans('Invalid credentials.'));
         }
 

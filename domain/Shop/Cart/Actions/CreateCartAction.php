@@ -13,14 +13,14 @@ final class CreateCartAction
     public function execute(CreateCartData $data): Cart
     {
         /** @var \Domain\Shop\Product\Models\Sku $sku */
-        $sku = Sku::where((new Sku())->getRouteKeyName(), $data->sku_id)
+        $sku = Sku::where((new Sku())->getRouteKeyName(), $data->sku_uuid)
             ->first();
 
         return Cart::create([
-            'branch_id' => $data->branch->getKey(),
-            'customer_id' => $data->customer->getKey(),
-            'product_id' => $sku->product->getKey(),
-            'sku_id' => $sku->getKey(),
+            'branch_uuid' => $data->branch->getKey(),
+            'customer_uuid' => $data->customer->getKey(),
+            'product_uuid' => $sku->product->getKey(),
+            'sku_uuid' => $sku->getKey(),
             'sku_code' => $sku->code,
             'product_name' => $sku->product->name,
             'price' => $sku->price,

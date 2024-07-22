@@ -8,6 +8,9 @@ use Database\Factories\Support\HasMediaFactory;
 use Database\Seeders\Faker\MoneyFakerData;
 use Domain\Shop\Branch\Database\Factories\BranchFactory;
 use Domain\Shop\Branch\Models\Branch;
+use Domain\Shop\Product\Database\AttributeOptionForProductSku;
+use Domain\Shop\Product\Models\Attribute;
+use Domain\Shop\Product\Models\Product;
 use Domain\Shop\Product\Models\Sku;
 use Domain\Shop\Stock\Database\Factories\SkuStockFactory;
 use Illuminate\Database\Eloquent\Collection;
@@ -24,12 +27,13 @@ class SkuFactory extends Factory
 
     protected $model = Sku::class;
 
+    #[\Override]
     public function definition(): array
     {
         $this->faker->addProvider(new MoneyFakerData($this->faker));
 
         return [
-            'product_id' => ProductFactory::new(),
+            'product_uuid' => ProductFactory::new(),
             'code' => $this->faker->unique()->uuid(),
             /** @phpstan-ignore-next-line  */
             'price' => $this->faker->money(),
@@ -46,7 +50,7 @@ class SkuFactory extends Factory
         ];
     }
 
-    public function withDefaultData(array|Branch|BranchFactory|Collection $branches = null): self
+    public function withDefaultData(array|Branch|BranchFactory|Collection|null $branches = null): self
     {
         $self = $this;
 
@@ -59,15 +63,68 @@ class SkuFactory extends Factory
         foreach ($branches as $branch) {
 
             if (! ($branch instanceof Branch) && ! ($branch instanceof BranchFactory)) {
-                abort(500, 'Invalid');
+                throw new \Exception('Invalid');
             }
 
-            $self = $self->has(SkuStockFactory::new()->for($branch));
+            $self = $self->has(SkuStockFactory::new()->unlimited()->for($branch));
         }
 
         return $self
             ->hasRandomMedia()
             ->regenerateCode();
+    }
+
+    /**
+     * @param  array<int, AttributeOptionForProductSku|AttributeOptionFactory>  $attributeOptions
+     *
+     * @throws \Exception
+     */
+    public static function forProduct(
+        Product $product,
+        float|SkuFactory $priceOrSkuFactory,
+        array $attributeOptions,
+        array|Branch|BranchFactory|Collection|null $branches = null,
+    ): Sku {
+
+        $self = $priceOrSkuFactory instanceof self
+            ? $priceOrSkuFactory
+            : self::new(['price' => money($priceOrSkuFactory * 100)])->withDefaultData($branches);
+
+        foreach (
+            collect($attributeOptions)
+                ->ensure([AttributeOptionForProductSku::class, AttributeOptionFactory::class]) as $attributeOption
+        ) {
+
+            if ($attributeOption instanceof AttributeOptionFactory) {
+                $self = $self->has($attributeOption);
+
+                continue;
+            }
+
+            /** @var AttributeOptionForProductSku $attributeOption */
+            $attribute = Attribute::whereBelongsTo($product)
+                ->whereName($attributeOption->attributeName)
+                ->first();
+
+            if (null === $attribute) {
+                $attribute = AttributeFactory::new([
+                    'name' => $attributeOption->attributeName,
+                    'type' => $attributeOption->attributeFieldType,
+                    'prefix' => $attributeOption->attributeFieldPrefix,
+                    'suffix' => $attributeOption->attributeFieldSuffix,
+                ])
+                    ->for($product);
+            }
+
+            $attributeOptionFactory = AttributeOptionFactory::new(['value' => $attributeOption->attributeOptionValue])
+                ->for($attribute);
+
+            $self = $self->has($attributeOptionFactory);
+        }
+
+        return $self
+            ->for($product)
+            ->createOne();
     }
 
     public function regenerateCode(): self

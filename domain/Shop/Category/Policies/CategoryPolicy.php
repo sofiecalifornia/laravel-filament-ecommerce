@@ -41,4 +41,19 @@ class CategoryPolicy
     {
         return $this->checkWildcardPermissions($user);
     }
+
+    public function import(Admin $user): bool
+    {
+        return $this->checkWildcardPermissions($user);
+    }
+
+    public function exportAny(Admin $user): bool
+    {
+        return $this->checkWildcardPermissions($user);
+    }
+
+    public function export(Admin $user, Category $category): bool
+    {
+        return $this->checkWildcardPermissions($user);
+    }
 }

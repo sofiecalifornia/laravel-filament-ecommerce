@@ -12,6 +12,8 @@ return [
 
     'enabled' => env('LOG_VIEWER_ENABLED', true),
 
+    'require_auth_in_production' => true,
+
     /*
     |--------------------------------------------------------------------------
     | Log Viewer Domain
@@ -57,7 +59,7 @@ return [
     |
     */
 
-    'timezone' => 'asia/manila',
+    'timezone' => env('DEFAULT_TIMEZONE', 'Asia/Manila'),
 
     /*
     |--------------------------------------------------------------------------
@@ -135,7 +137,7 @@ return [
 
         // You can include paths to other log types as well, such as apache, nginx, and more.
         '/var/log/httpd/*',
-//        '/var/log/nginx/*',
+        '/var/log/nginx/*',
 
         // MacOS Apple Silicon logs
         '/opt/homebrew/var/log/nginx/*',

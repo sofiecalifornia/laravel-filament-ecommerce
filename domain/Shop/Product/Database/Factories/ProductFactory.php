@@ -5,11 +5,8 @@ declare(strict_types=1);
 namespace Domain\Shop\Product\Database\Factories;
 
 use Database\Factories\Support\HasMediaFactory;
-use Domain\Shop\Branch\Database\Factories\BranchFactory;
-use Domain\Shop\Branch\Models\Branch;
 use Domain\Shop\Product\Enums\Status;
 use Domain\Shop\Product\Models\Product;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Arr;
 
@@ -22,6 +19,7 @@ class ProductFactory extends Factory
 
     protected $model = Product::class;
 
+    #[\Override]
     public function definition(): array
     {
         return [
@@ -35,24 +33,7 @@ class ProductFactory extends Factory
     public function inStockStatus(): self
     {
         return $this->state([
-            'status' => Status::IN_STOCK,
+            'status' => Status::in_stock,
         ]);
-    }
-
-    public function hasSku(
-        float|SkuFactory $priceOrSkuFactory,
-        array $attributeOptionFactories,
-        array|Branch|BranchFactory|Collection $branches = null,
-    ): self {
-        $skuFactory = is_float($priceOrSkuFactory)
-            ? SkuFactory::new(['price' => $priceOrSkuFactory])->withDefaultData($branches)
-            : $priceOrSkuFactory;
-
-        foreach (collect($attributeOptionFactories)
-            ->ensure(AttributeOptionFactory::class) as $attributeOptionFactory) {
-            $skuFactory = $skuFactory->has($attributeOptionFactory);
-        }
-
-        return $this->has($skuFactory);
     }
 }

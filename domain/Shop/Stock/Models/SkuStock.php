@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Domain\Shop\Stock\Models;
 
-use App\Helpers;
 use Domain\Shop\Branch\Models\Branch;
 use Domain\Shop\Product\Models\Sku;
 use Domain\Shop\Stock\Enums\StockType;
+use Domain\Shop\Stock\Models\EloquentBuilder\SkuStockEloquentBuilder;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\Activitylog\LogOptions;
@@ -16,58 +17,64 @@ use Spatie\Activitylog\Traits\LogsActivity;
 /**
  * Domain\Shop\Stock\Models\SkuStock
  *
- * @property int $id
- * @property int $branch_id
- * @property int $sku_id
+ * @property string $uuid
+ * @property string $branch_uuid
+ * @property string $sku_uuid
  * @property \Domain\Shop\Stock\Enums\StockType $type PHP backed enum
  * @property float|null $count when base on stock
  * @property float|null $warning when base on stock
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\Activitylog\Models\Activity> $activities
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Spatie\Activitylog\Models\Activity[] $activities
  * @property-read int|null $activities_count
  * @property-read \Domain\Shop\Branch\Models\Branch $branch
  * @property-read \Domain\Shop\Product\Models\Sku $sku
  *
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Stock\Models\SkuStock newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Stock\Models\SkuStock newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Stock\Models\SkuStock query()
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Stock\Models\SkuStock whereBranchId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Stock\Models\SkuStock whereCount($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Stock\Models\SkuStock whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Stock\Models\SkuStock whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Stock\Models\SkuStock whereSkuId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Stock\Models\SkuStock whereType($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Stock\Models\SkuStock whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Stock\Models\SkuStock whereWarning($value)
+ * @method static \Domain\Shop\Stock\Models\EloquentBuilder\SkuStockEloquentBuilder|\Domain\Shop\Stock\Models\SkuStock newModelQuery()
+ * @method static \Domain\Shop\Stock\Models\EloquentBuilder\SkuStockEloquentBuilder|\Domain\Shop\Stock\Models\SkuStock newQuery()
+ * @method static \Domain\Shop\Stock\Models\EloquentBuilder\SkuStockEloquentBuilder|\Domain\Shop\Stock\Models\SkuStock query()
+ * @method static \Domain\Shop\Stock\Models\EloquentBuilder\SkuStockEloquentBuilder|\Domain\Shop\Stock\Models\SkuStock whereBaseOnStocksIsNotWarning()
+ * @method static \Domain\Shop\Stock\Models\EloquentBuilder\SkuStockEloquentBuilder|\Domain\Shop\Stock\Models\SkuStock whereBaseOnStocksIsWarning()
+ * @method static \Domain\Shop\Stock\Models\EloquentBuilder\SkuStockEloquentBuilder|\Domain\Shop\Stock\Models\SkuStock whereBaseOnStocksNotZero()
  *
  * @mixin \Eloquent
  */
 class SkuStock extends Model
 {
+    use HasUuids;
     use LogsActivity;
 
+    protected $primaryKey = 'uuid';
+
     protected $fillable = [
-        'branch_id',
-        'sku_id',
+        'branch_uuid',
         'type',
         'count',
         'warning',
     ];
 
-    protected $casts = [
-        'count' => 'float',
-        'warning' => 'float',
-        'type' => StockType::class,
-    ];
+    #[\Override]
+    protected function casts(): array
+    {
+        return [
+            'count' => 'float',
+            'warning' => 'float',
+            'type' => StockType::class,
+        ];
+    }
 
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->useLogName(Helpers::getCurrentAuthDriver())
             ->logFillable()
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();
+    }
+
+    #[\Override]
+    public function newEloquentBuilder($query): SkuStockEloquentBuilder
+    {
+        return new SkuStockEloquentBuilder($query);
     }
 
     /** @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\Domain\Shop\Branch\Models\Branch, \Domain\Shop\Stock\Models\SkuStock> */
@@ -80,5 +87,10 @@ class SkuStock extends Model
     public function sku(): BelongsTo
     {
         return $this->belongsTo(Sku::class);
+    }
+
+    public function isBaseOnStockWarning(): bool
+    {
+        return $this->count < $this->warning;
     }
 }

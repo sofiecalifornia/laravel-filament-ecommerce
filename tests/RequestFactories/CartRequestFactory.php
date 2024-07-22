@@ -9,6 +9,7 @@ use Worksome\RequestFactories\RequestFactory;
 
 class CartRequestFactory extends RequestFactory
 {
+    #[\Override]
     public function definition(): array
     {
         return [
@@ -19,7 +20,7 @@ class CartRequestFactory extends RequestFactory
     public function withSku(Sku $sku): self
     {
         return $this->state([
-            'sku_id' => $sku->getRouteKey(),
+            'sku_uuid' => $sku->getRouteKey(),
         ]);
     }
 

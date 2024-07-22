@@ -6,10 +6,9 @@ namespace App\Providers;
 
 use App\Policies\ActivityPolicy;
 use Domain\Access\Admin\Models\Admin;
-use Filament\Facades\Filament;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
-use Opcodes\LogViewer\Facades\LogViewer;
 use Spatie\Activitylog\Models\Activity;
 
 class AuthServiceProvider extends ServiceProvider
@@ -24,8 +23,18 @@ class AuthServiceProvider extends ServiceProvider
         /** @see https://freek.dev/1325-when-to-use-gateafter-in-laravel */
         Gate::after(fn ($user) => $user instanceof Admin ? $user->isSuperAdmin() : null);
 
-        LogViewer::auth(fn ($request) => Filament::auth()->check() && Filament::auth()->user()?->isSuperAdmin());
+        self::defineGates();
+    }
 
-        Gate::define('viewApiDocs', fn (Admin $user) => true); // allow public access
+    private static function defineGates(): void
+    {
+        // super admin only
+        $superAdminOnly = fn (?Authenticatable $user): bool => $user instanceof Admin && $user->isSuperAdmin();
+
+        Gate::define('viewLogViewer', $superAdminOnly);
+        Gate::define('viewPulse', $superAdminOnly);
+        Gate::define('download-backup', $superAdminOnly);
+        Gate::define('delete-backup', $superAdminOnly);
+        //        Gate::define('viewApiDocs', fn (Admin $user) => true); // allow public access
     }
 }

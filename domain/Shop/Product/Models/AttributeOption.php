@@ -4,46 +4,40 @@ declare(strict_types=1);
 
 namespace Domain\Shop\Product\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
-use Spatie\Sluggable\HasSlug;
-use Spatie\Sluggable\SlugOptions;
 
 /**
  * Domain\Shop\Product\Models\AttributeOption
  *
- * @property int $id
- * @property int $attribute_id
+ * @property string $uuid
+ * @property string $attribute_uuid
  * @property string $value
- * @property string $slug
  * @property int $order_column manage by spatie/eloquent-sortable
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Domain\Shop\Product\Models\Attribute $attribute
+ * @property-read string $label
  *
  * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Product\Models\AttributeOption newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Product\Models\AttributeOption newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Product\Models\AttributeOption ordered(string $direction = 'asc')
  * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Product\Models\AttributeOption query()
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Product\Models\AttributeOption whereAttributeId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Product\Models\AttributeOption whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Product\Models\AttributeOption whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Product\Models\AttributeOption whereOrderColumn($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Product\Models\AttributeOption whereSlug($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Product\Models\AttributeOption whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Product\Models\AttributeOption whereValue($value)
  *
  * @mixin \Eloquent
  */
 class AttributeOption extends Model implements Sortable
 {
-    use HasSlug;
+    use HasUuids;
     use SortableTrait;
 
+    protected $primaryKey = 'uuid';
+
     protected $fillable = [
-        'attribute_id',
+        'attribute_uuid',
         'value',
         'order_column',
     ];
@@ -54,15 +48,16 @@ class AttributeOption extends Model implements Sortable
         return $this->belongsTo(Attribute::class);
     }
 
-    public function getSlugOptions(): SlugOptions
+    /** @return \Illuminate\Database\Eloquent\Casts\Attribute<string, never> */
+    protected function label(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        return SlugOptions::create()
-            ->generateSlugsFrom(['attribute.name', 'value'])
-            ->saveSlugsTo($this->getRouteKeyName());
-    }
-
-    public function getRouteKeyName(): string
-    {
-        return 'slug';
+        return \Illuminate\Database\Eloquent\Casts\Attribute::get(
+            fn (): string => trans(':name: :prefix:value:suffix', [
+                'name' => $this->attribute->name,
+                'prefix' => $this->attribute->prefix ?? '',
+                'value' => $this->value,
+                'suffix' => $this->attribute->suffix ?? '',
+            ])
+        );
     }
 }

@@ -6,14 +6,20 @@ namespace App\Http\Controllers\API\Shop\Product;
 
 use App\Http\Resources\Shop\ProductResource;
 use Domain\Shop\Product\Models\Product;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\RouteAttributes\Attributes\Resource;
-use TiMacDonald\JsonApi\JsonApiResourceCollection;
 
 #[Resource('products', only: ['index', 'show'])]
 class ProductController
 {
-    public function index(): JsonApiResourceCollection
+    /**
+     * @unauthenticated
+     *
+     * @return AnonymousResourceCollection<LengthAwarePaginator<ProductResource>>
+     */
+    public function index(): mixed
     {
         return ProductResource::collection(
             QueryBuilder::for(
@@ -26,6 +32,7 @@ class ProductController
                     'skus.media',
                     'skus.skuStocks',
                     'category.parent',
+                    'tags',
                 ])
                 ->allowedSorts([
                     'name', 'status', 'updated_at',
@@ -39,6 +46,9 @@ class ProductController
         );
     }
 
+    /**
+     * @unauthenticated
+     */
     public function show(string $product): ProductResource
     {
         return ProductResource::make(
@@ -53,6 +63,7 @@ class ProductController
                     'skus.media',
                     'skus.skuStocks',
                     'category.parent',
+                    'tags',
                 ])
                 ->firstOrFail()
         );

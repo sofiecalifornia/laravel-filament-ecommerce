@@ -5,13 +5,19 @@ declare(strict_types=1);
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
-use TiMacDonald\JsonApi\JsonApiResource;
 
 /**
  * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Media $resource
  */
-class MediaResource extends JsonApiResource
+class MediaResource extends BaseJsonApiResource
 {
+    #[\Override]
+    public function toId(Request $request): string
+    {
+        return $this->resource->uuid;
+    }
+
+    #[\Override]
     public function toAttributes(Request $request): array
     {
         return [

@@ -1,0 +1,7 @@
+### Get All Products
+GET {{ host }}/products?include=skus
+Accept: application/json
+
+### Show Product
+GET {{ host }}/products/samsung-galaxy-s21
+Accept: application/json

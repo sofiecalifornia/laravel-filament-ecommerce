@@ -12,7 +12,7 @@ final readonly class EditRoleAction
     public function execute(Role $role, RoleData $roleData): Role
     {
         if (in_array($role->name, (array) config('domain.access.role'))) {
-            abort(400, 'Cannot update this role.');
+            abort(400, trans('Cannot update this role.'));
         }
 
         $role->update([

@@ -14,12 +14,12 @@ class SupportBubbleSubmittedToSentryFeedbackListener
     {
         $dns = config('sentry.dsn');
 
-        if (blank($dns)) {
-            return;
-        }
-
         $organizationSlug = config('app-sentry.organization_slug');
         $projectSlug = config('app-sentry.project_slug');
+
+        if (blank($dns) || blank($organizationSlug) || blank($projectSlug)) {
+            return;
+        }
 
         Http::withToken($dns, type: 'DSN')
             ->asJson()

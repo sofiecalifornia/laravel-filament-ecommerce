@@ -7,13 +7,17 @@ namespace Database\Seeders;
 use Domain\Shop\Branch\Models\Branch;
 use Domain\Shop\Brand\Models\Brand;
 use Domain\Shop\Category\Models\Category;
-use Domain\Shop\Product\Database\Factories\AttributeFactory;
-use Domain\Shop\Product\Database\Factories\AttributeOptionFactory;
+use Domain\Shop\Product\Database\AttributeOptionForProductSku;
 use Domain\Shop\Product\Database\Factories\ProductFactory;
+use Domain\Shop\Product\Database\Factories\SkuFactory;
+use Domain\Shop\Product\Enums\AttributeFieldType;
 use Illuminate\Database\Seeder;
 
 class ProductSeeder extends Seeder
 {
+    /**
+     * @throws \Exception
+     */
     public function run(): void
     {
         /** @var \Domain\Shop\Category\Models\Category $category */
@@ -22,149 +26,165 @@ class ProductSeeder extends Seeder
         /** @var \Domain\Shop\Branch\Models\Branch[] $branches */
         $branches = Branch::orderBy('name')->get();
 
-        /** @phpstan-ignore-next-line  */
-        [$color, $ram, $storage] =
-            AttributeFactory::new()
-                ->count(3)
-                ->sequence(
-                    ['name' => 'Color'],
-                    ['name' => 'RAM'],
-                    ['name' => 'Storage'],
-                )
-                ->create();
-
-        ProductFactory::new(['name' => 'Samsung Galaxy S21'])
+        $product = ProductFactory::new(['name' => 'Samsung Galaxy S21'])
             ->for($category)
             ->for($samsung)
             ->inStockStatus()
             ->hasRandomMedia()
-            ->hasSku(
-                priceOrSkuFactory: 349,
-                attributeOptionFactories: [
-                    AttributeOptionFactory::new(['value' => 'Red'])
-                        ->for($color),
-                    AttributeOptionFactory::new(['value' => '2GB'])
-                        ->for($ram),
-                    AttributeOptionFactory::new(['value' => '32GB'])
-                        ->for($storage),
-                ],
-                branches: $branches,
-            )
-            ->hasSku(
-                priceOrSkuFactory: 349,
-                attributeOptionFactories: [
-                    AttributeOptionFactory::new(['value' => 'Green'])
-                        ->for($color),
-                    AttributeOptionFactory::new(['value' => '4GB'])
-                        ->for($ram),
-                    AttributeOptionFactory::new(['value' => '32GB'])
-                        ->for($storage),
-                ],
-                branches: $branches,
-            )
-            ->hasSku(
-                priceOrSkuFactory: 349,
-                attributeOptionFactories: [
-                    AttributeOptionFactory::new(['value' => 'Yellow'])
-                        ->for($color),
-                    AttributeOptionFactory::new(['value' => '8GB'])
-                        ->for($ram),
-                    AttributeOptionFactory::new(['value' => '32GB'])
-                        ->for($storage),
-                ],
-                branches: $branches,
-            )
-            ->hasSku(
-                priceOrSkuFactory: 1_099,
-                attributeOptionFactories: [
-                    AttributeOptionFactory::new(['value' => 'Blue'])
-                        ->for($color),
-                    AttributeOptionFactory::new(['value' => '8GB'])
-                        ->for($ram),
-                    AttributeOptionFactory::new(['value' => '512GB'])
-                        ->for($storage),
-                ],
-                branches: $branches,
-            )
-            ->hasSku(
-                priceOrSkuFactory: 1_499,
-                attributeOptionFactories: [
-                    AttributeOptionFactory::new(['value' => 'Black'])
-                        ->for($color),
-                    AttributeOptionFactory::new(['value' => '16GB'])
-                        ->for($ram),
-                    AttributeOptionFactory::new(['value' => '1TB'])
-                        ->for($storage),
-                ],
-                branches: $branches,
-            )
             ->createOne();
 
-        ProductFactory::new(['name' => 'iPhone 14 MAX'])
+        SkuFactory::forProduct(
+            product: $product,
+            priceOrSkuFactory: 100,
+            attributeOptions: [
+
+                new AttributeOptionForProductSku(
+                    'Color',
+                    'Red',
+                    attributeFieldType: AttributeFieldType::color_picker
+                ),
+                new AttributeOptionForProductSku(
+                    'Ram',
+                    '2',
+                    attributeFieldSuffix: 'GB',
+                    attributeFieldType: AttributeFieldType::numeric
+                ),
+                new AttributeOptionForProductSku(
+                    'Storage',
+                    '8',
+                    attributeFieldSuffix: 'GB',
+                    attributeFieldType: AttributeFieldType::numeric
+                ),
+            ],
+            branches: $branches,
+        );
+        SkuFactory::forProduct(
+            product: $product,
+            priceOrSkuFactory: 200,
+            attributeOptions: [
+                new AttributeOptionForProductSku(
+                    'Color',
+                    'Black',
+                    attributeFieldType: AttributeFieldType::color_picker
+                ),
+                new AttributeOptionForProductSku(
+                    'Ram',
+                    '4',
+                    attributeFieldSuffix: 'GB',
+                    attributeFieldType: AttributeFieldType::numeric
+                ),
+                new AttributeOptionForProductSku(
+                    'Storage',
+                    '1',
+                    attributeFieldSuffix: 'GB',
+                    attributeFieldType: AttributeFieldType::numeric
+                ),
+            ],
+            branches: $branches,
+        );
+        SkuFactory::forProduct(
+            product: $product,
+            priceOrSkuFactory: 300,
+            attributeOptions: [
+                new AttributeOptionForProductSku(
+                    'Color',
+                    'White',
+                    attributeFieldType: AttributeFieldType::color_picker
+                ),
+                new AttributeOptionForProductSku(
+                    'Ram',
+                    '16',
+                    attributeFieldSuffix: 'GB',
+                    attributeFieldType: AttributeFieldType::numeric
+                ),
+                new AttributeOptionForProductSku(
+                    'Storage',
+                    '64',
+                    attributeFieldSuffix: 'GB',
+                    attributeFieldType: AttributeFieldType::numeric
+                ),
+            ],
+            branches: $branches,
+        );
+
+        $product = ProductFactory::new(['name' => 'iPhone 14 MAX'])
             ->for($category)
             ->for($iPhone)
             ->inStockStatus()
             ->hasRandomMedia()
-            ->hasSku(
-                priceOrSkuFactory: 449,
-                attributeOptionFactories: [
-                    AttributeOptionFactory::new(['value' => 'Red'])
-                        ->for($color),
-                    AttributeOptionFactory::new(['value' => '2GB'])
-                        ->for($ram),
-                    AttributeOptionFactory::new(['value' => '32GB'])
-                        ->for($storage),
-                ],
-                branches: $branches,
-            )
-            ->hasSku(
-                priceOrSkuFactory: 449,
-                attributeOptionFactories: [
-                    AttributeOptionFactory::new(['value' => 'Green'])
-                        ->for($color),
-                    AttributeOptionFactory::new(['value' => '4GB'])
-                        ->for($ram),
-                    AttributeOptionFactory::new(['value' => '32GB'])
-                        ->for($storage),
-                ],
-                branches: $branches,
-            )
-            ->hasSku(
-                priceOrSkuFactory: 449,
-                attributeOptionFactories: [
-                    AttributeOptionFactory::new(['value' => 'Yellow'])
-                        ->for($color),
-                    AttributeOptionFactory::new(['value' => '8GB'])
-                        ->for($ram),
-                    AttributeOptionFactory::new(['value' => '32GB'])
-                        ->for($storage),
-                ],
-                branches: $branches,
-            )
-            ->hasSku(
-                priceOrSkuFactory: 1_299,
-                attributeOptionFactories: [
-                    AttributeOptionFactory::new(['value' => 'Blue'])
-                        ->for($color),
-                    AttributeOptionFactory::new(['value' => '8GB'])
-                        ->for($ram),
-                    AttributeOptionFactory::new(['value' => '512GB'])
-                        ->for($storage),
-                ],
-                branches: $branches,
-            )
-            ->hasSku(
-                priceOrSkuFactory: 1_999,
-                attributeOptionFactories: [
-                    AttributeOptionFactory::new(['value' => 'Blue'])
-                        ->for($color),
-                    AttributeOptionFactory::new(['value' => '16GB'])
-                        ->for($ram),
-                    AttributeOptionFactory::new(['value' => '512GB'])
-                        ->for($storage),
-                ],
-                branches: $branches,
-            )
             ->createOne();
+
+        SkuFactory::forProduct(
+            product: $product,
+            priceOrSkuFactory: 400,
+            attributeOptions: [
+                new AttributeOptionForProductSku(
+                    'Color',
+                    'Red',
+                    attributeFieldType: AttributeFieldType::color_picker
+                ),
+                new AttributeOptionForProductSku(
+                    'Ram',
+                    '2',
+                    attributeFieldSuffix: 'GB',
+                    attributeFieldType: AttributeFieldType::numeric
+                ),
+                new AttributeOptionForProductSku(
+                    'Storage',
+                    '8',
+                    attributeFieldSuffix: 'GB',
+                    attributeFieldType: AttributeFieldType::numeric
+                ),
+            ],
+            branches: $branches,
+        );
+        SkuFactory::forProduct(
+            product: $product,
+            priceOrSkuFactory: 500,
+            attributeOptions: [
+                new AttributeOptionForProductSku(
+                    'Color',
+                    'Black',
+                    attributeFieldType: AttributeFieldType::color_picker
+                ),
+                new AttributeOptionForProductSku(
+                    'Ram',
+                    '4',
+                    attributeFieldSuffix: 'GB',
+                    attributeFieldType: AttributeFieldType::numeric
+                ),
+                new AttributeOptionForProductSku(
+                    'Storage',
+                    '1',
+                    attributeFieldSuffix: 'GB',
+                    attributeFieldType: AttributeFieldType::numeric
+                ),
+            ],
+            branches: $branches,
+        );
+        SkuFactory::forProduct(
+            product: $product,
+            priceOrSkuFactory: 600,
+            attributeOptions: [
+                new AttributeOptionForProductSku(
+                    'Color',
+                    'White',
+                    attributeFieldType: AttributeFieldType::color_picker
+                ),
+                new AttributeOptionForProductSku(
+                    'Ram',
+                    '16',
+                    attributeFieldSuffix: 'GB',
+                    attributeFieldType: AttributeFieldType::numeric
+                ),
+                new AttributeOptionForProductSku(
+                    'Storage',
+                    '64',
+                    attributeFieldSuffix: 'GB',
+                    attributeFieldType: AttributeFieldType::numeric
+                ),
+            ],
+            branches: $branches,
+        );
     }
 }

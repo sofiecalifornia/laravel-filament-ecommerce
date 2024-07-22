@@ -14,6 +14,7 @@ class AddressFactory extends Factory
 {
     protected $model = Address::class;
 
+    #[\Override]
     public function definition(): array
     {
         return [

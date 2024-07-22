@@ -4,22 +4,19 @@ declare(strict_types=1);
 
 namespace App\Casts;
 
-use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
-
 /**
- * https://filamentphp.com/docs/3.x/panels/getting-started#casting-the-price-to-an-integer
+ * @template TGet
+ * @template TSet
  */
-class MoneyCast implements CastsAttributes
+class MoneyCast extends \Akaunting\Money\Casts\MoneyCast
 {
-    public function get($model, string $key, mixed $value, array $attributes): float
+    #[\Override]
+    public function set($model, string $key, $value, array $attributes): string
     {
-        // Transform the integer stored in the database into a float.
-        return round(floatval($value) / 100, precision: 2);
-    }
+        if (is_numeric($value)) {
+            $value = money($value * 100);
+        }
 
-    public function set($model, string $key, mixed $value, array $attributes): float
-    {
-        // Transform the float into an integer for storage.
-        return round(floatval($value) * 100);
+        return parent::set($model, $key, $value, $attributes);
     }
 }

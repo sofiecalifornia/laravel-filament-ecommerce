@@ -8,9 +8,14 @@ use Domain\Shop\Branch\Models\Branch;
 use function Pest\Laravel\assertDatabaseEmpty;
 use function Pest\Laravel\getJson;
 
-beforeEach(fn () => config(['media-library.version_urls' => false]));
+dataset(
+    'includes',
+    [
+        'media',
+    ]
+);
 
-it('list', function () {
+it('list', function (?string $include) {
 
     assertDatabaseEmpty(Branch::class);
 
@@ -21,18 +26,53 @@ it('list', function () {
         ->sequence(
             [
                 'name' => 'Branch 1',
+                'address' => 'Address 1',
+                'phone' => 'Phone 1',
+                'email' => 'Email 1',
+                'website' => 'Website 1',
             ],
             [
                 'name' => 'Branch 2',
+                'address' => 'Address 2',
+                'phone' => 'Phone 2',
+                'email' => 'Email 2',
+                'website' => 'Website 2',
             ],
             [
                 'name' => 'Branch 3',
+                'address' => 'Address 3',
+                'phone' => 'Phone 3',
+                'email' => 'Email 3',
+                'website' => 'Website 3',
             ],
         )
         ->create();
 
-    $response = getJson('api/branches?include=media')
+    $response = getJson('api/branches?include='.$include)
         ->assertOk();
 
     expect($response)->toMatchSnapshot();
-});
+})
+    ->with('includes');
+
+it('show', function (?string $include) {
+
+    assertDatabaseEmpty(Branch::class);
+
+    $branch = BranchFactory::new()
+        ->hasSpecificMedia()
+        ->enabled()
+        ->createOne([
+            'name' => 'Branch 1',
+            'address' => 'Address 1',
+            'phone' => 'Phone 1',
+            'email' => 'Email 1',
+            'website' => 'Website 1',
+        ]);
+
+    $response = getJson('api/branches/'.$branch->getRouteKey().'?include='.$include)
+        ->assertOk();
+
+    expect($response)->toMatchSnapshot();
+})
+    ->with('includes');

@@ -19,14 +19,14 @@ readonly class CheckQuantitySkuStockRule implements ValidationRule
     public function __construct(
         Branch $branch,
         Sku|string|int $sku,
-        string $skuColumn = 'id',
+        string $skuColumn = 'uuid',
     ) {
         $query = $sku instanceof Sku
             ? Sku::whereKey($sku)
             : Sku::where($skuColumn, $sku);
 
         $this->skuModel = $query
-            ->whereRelation('product', 'status', Status::IN_STOCK)
+            ->whereRelation('product', 'status', Status::in_stock)
             ->with([
                 'skuStocks' => fn (HasMany $query) => $query
                     ->whereBelongsTo($branch),
@@ -34,6 +34,7 @@ readonly class CheckQuantitySkuStockRule implements ValidationRule
             ->first();
     }
 
+    #[\Override]
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         $quantity = (float) $value;
@@ -41,23 +42,23 @@ readonly class CheckQuantitySkuStockRule implements ValidationRule
 
         $skuStock = $this->skuModel?->skuStocks[0] ?? null;
 
-        if ($skuStock === null) {
+        if (null === $skuStock) {
             $fail(trans('Sku stock not ready.'));
 
             return;
         }
 
-        if ($skuStock->type === StockType::UNLIMITED) {
+        if (StockType::unlimited === $skuStock->type) {
             return;
         }
 
-        if ($skuStock->type === StockType::UNAVAILABLE) {
+        if (StockType::unavailable === $skuStock->type) {
             $fail(trans('Sku stock is not available.'));
 
             return;
         }
 
-        if ($skuStock->type === StockType::BASE_ON_STOCK && $quantity > $skuStock->count) {
+        if (StockType::base_on_stock === $skuStock->type && $quantity > $skuStock->count) {
             /** @var int $count */
             $count = $skuStock->count;
             $fail(trans('Sku Stock is insufficient, available: :count.', ['count' => $count]));

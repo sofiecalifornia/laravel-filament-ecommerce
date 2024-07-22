@@ -13,7 +13,7 @@ final readonly class SaveOrderItemAction
     public function execute(Order $order, Sku $sku, float $quantity): OrderItem
     {
         return $order->orderItems()->create([
-            'sku_id' => $sku->getKey(),
+            'sku_uuid' => $sku->getKey(),
             'quantity' => $quantity,
         ]);
     }

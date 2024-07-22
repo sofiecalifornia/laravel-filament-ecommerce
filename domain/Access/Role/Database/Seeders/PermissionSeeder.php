@@ -15,6 +15,7 @@ abstract class PermissionSeeder extends Seeder
 
     public function run(): void
     {
+        /** @var \Domain\Access\Role\Models\Permission $permissionClass */
         $permissionClass = app(PermissionRegistrar::class)->getPermissionClass();
 
         collect($this->permissionsByGuard())
@@ -35,6 +36,10 @@ abstract class PermissionSeeder extends Seeder
                     $progressBar->finish();
                     $this->command->getOutput()->info('Done Seeding permissions for guard: '.$guard.'!');
                     $this->command->getOutput()->newLine();
+
+                    $permissionClass::whereGuardName($guard)
+                        ->whereNotIn('name', $permissions)
+                        ->delete();
                 }
             );
     }
@@ -42,14 +47,14 @@ abstract class PermissionSeeder extends Seeder
     /** @param  class-string  $modelPolicy */
     protected static function generateFilamentResourcePermissions(string $modelPolicy): array
     {
-        $reject = ['before', 'after'];
+        $reject = collect(['before', 'after']);
 
         foreach (class_uses_recursive($modelPolicy) as $trait) {
-            $reject = $reject + get_class_methods($trait);
+            $reject = $reject->merge(get_class_methods($trait));
         }
 
         $permissions = collect(get_class_methods($modelPolicy))
-            ->reject(fn (string $functionName) => in_array($functionName, $reject))
+            ->reject(fn (string $functionName) => false !== $reject->search($functionName))
             ->toArray();
 
         return self::generatePermissionGroup(

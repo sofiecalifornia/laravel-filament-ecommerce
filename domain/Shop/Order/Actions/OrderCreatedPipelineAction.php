@@ -7,7 +7,8 @@ namespace Domain\Shop\Order\Actions;
 use Domain\Shop\Order\DataTransferObjects\OrderPipelineData;
 use Domain\Shop\Order\Models\Order;
 use Domain\Shop\Order\Pipes\OrderCreated\DecrementSkuStockPipe;
-use Domain\Shop\Order\Pipes\OrderCreated\NotifyAdminPipe;
+use Domain\Shop\Order\Pipes\OrderCreated\GenerateInvoicePipe;
+use Domain\Shop\Order\Pipes\OrderCreated\NotificationPipe;
 use Illuminate\Support\Facades\Pipeline;
 
 final readonly class OrderCreatedPipelineAction
@@ -16,8 +17,9 @@ final readonly class OrderCreatedPipelineAction
     {
         Pipeline::send(new OrderPipelineData($order))
             ->through([
+                GenerateInvoicePipe::class,
                 DecrementSkuStockPipe::class,
-                NotifyAdminPipe::class,
+                NotificationPipe::class,
             ])
             ->thenReturn();
     }

@@ -35,7 +35,7 @@ it('get list', function () {
         ->withCustomer($this->customer)
         ->createOne();
 
-    getJson('api/carts/'.$this->branch->getRouteKey().'?include=sku.product')
+    getJson('api/branches/'.$this->branch->getRouteKey().'/carts?include=sku.product')
         ->assertOk()
         ->assertJson(function (AssertableJson $json) use ($cart) {
             $json
@@ -44,14 +44,14 @@ it('get list', function () {
                 ->where('data.0.id', (string) $cart->getRouteKey())
                 ->where('data.0.attributes.product_name', $cart->product_name)
                 ->where('data.0.attributes.sku_code', $cart->sku_code)
-                ->where('data.0.attributes.price', (float) $cart->price)
+                ->where('data.0.attributes.price', moneyJsonApi($cart->price))
                 ->where('data.0.attributes.quantity', 2)
                 ->etc();
         });
 
 });
 
-it('get store', function () {
+it('store', function () {
 
     $product = createProduct($this->branch, 2);
 
@@ -60,7 +60,7 @@ it('get store', function () {
         ->withQuantity(2)
         ->create();
 
-    postJson('api/carts/'.$this->branch->getRouteKey().'?include=sku.product', $data)
+    postJson('api/branches/'.$this->branch->getRouteKey().'/carts?include=sku.product', $data)
         ->assertValid()
         ->assertCreated();
 
@@ -82,7 +82,7 @@ it('update', function () {
         'quantity' => 2,
     ]);
 
-    putJson('api/carts/'.$this->branch->getRouteKey().'/'.$cart->getRouteKey(), ['quantity' => 3])
+    putJson('api/branches/'.$this->branch->getRouteKey().'/carts/'.$cart->getRouteKey(), ['quantity' => 3])
         ->assertValid()
         ->assertOk();
 
@@ -105,7 +105,7 @@ it('delete', function () {
 
     assertDatabaseCount(Cart::class, 1);
 
-    deleteJson('api/carts/'.$this->branch->getRouteKey().'/'.$cart->getRouteKey())
+    deleteJson('api/branches/'.$this->branch->getRouteKey().'/carts/'.$cart->getRouteKey())
         ->assertNoContent();
 
     assertDatabaseEmpty(Cart::class);

@@ -1,0 +1,15 @@
+### Generate Customer Access Token
+POST {{ host }}/customers/login
+Accept: application/json
+Content-Type: application/json
+
+{
+  "email": "{{ username }}",
+  "password": "{{ password }}"
+}
+
+> {%
+client.global.set("accessToken", response.body.token)
+ %}
+
+###

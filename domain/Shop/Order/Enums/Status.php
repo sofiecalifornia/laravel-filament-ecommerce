@@ -11,22 +11,22 @@ use Illuminate\Support\Str;
 
 enum Status: string implements HasColor, HasIcon, HasLabel
 {
-    case PENDING = 'pending';
-    case PREPARING = 'preparing';
-    case IN_QUEUE = 'in-queue';
-    case READY = 'ready';
-    case DISPATCHED = 'dispatched';
-    case COMPLETED = 'completed';
-    case CANCELED = 'canceled';
-    case FAILED = 'failed';
+    case pending = 'pending';
+    case preparing = 'preparing';
+    case in_queue = 'in_queue';
+    case ready = 'ready';
+    case dispatched = 'dispatched';
+    case completed = 'completed';
+    case canceled = 'canceled';
+    case failed = 'failed';
 
     public function getColor(): string|array|null
     {
         return match ($this) {
-            self::COMPLETED => 'success',
-            self::READY, self::PREPARING, self::IN_QUEUE , self::DISPATCHED => 'warning',
-            self::CANCELED, self::FAILED => 'danger',
-            default => 'info',
+            self::completed => 'success',
+            self::pending, self::ready, self::preparing,
+            self::in_queue , self::dispatched => 'warning',
+            self::canceled, self::failed => 'danger',
         };
     }
 
@@ -38,9 +38,8 @@ enum Status: string implements HasColor, HasIcon, HasLabel
     public function getIcon(): ?string
     {
         return match ($this) {
-            self::COMPLETED => 'heroicon-o-check-circle',
-            self::READY, self::PREPARING, self::IN_QUEUE , self::DISPATCHED => 'heroicon-o-clock',
-            self::CANCELED, self::FAILED => 'heroicon-o-x-circle',
+            self::completed => 'heroicon-o-check-circle',
+            self::pending, self::canceled, self::failed => 'heroicon-o-x-circle',
             default => 'heroicon-o-information-circle',
         };
     }

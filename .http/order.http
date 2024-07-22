@@ -1,0 +1,12 @@
+### Store Order
+
+POST {{ host }}/branches/{{ branch }}/orders
+Accept: application/json
+Authorization: Bearer {{ accessToken }}
+Content-Type: application/json
+
+{
+    "claim_type": "delivery",
+    "claim_at": "2024-06-25 22:22",
+    "payment_method": "cash"
+}

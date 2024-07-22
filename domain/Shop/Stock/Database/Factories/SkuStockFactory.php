@@ -16,16 +16,17 @@ class SkuStockFactory extends Factory
 {
     protected $model = SkuStock::class;
 
+    #[\Override]
     public function definition(): array
     {
         return [
             'type' => Arr::random(StockType::cases()),
             'count' => fn (array $attributes) => match ($attributes['type']) {
-                StockType::BASE_ON_STOCK => $this->faker->numberBetween(15, 30),
+                StockType::base_on_stock => $this->faker->numberBetween(15, 30),
                 default => null,
             },
             'warning' => fn (array $attributes) => match ($attributes['type']) {
-                StockType::BASE_ON_STOCK => $this->faker->numberBetween(5, 15),
+                StockType::base_on_stock => $this->faker->numberBetween(5, 15),
                 default => null,
             },
         ];
@@ -34,14 +35,14 @@ class SkuStockFactory extends Factory
     public function unlimited(): self
     {
         return $this->state([
-            'type' => StockType::UNLIMITED,
+            'type' => StockType::unlimited,
         ]);
     }
 
     public function baseOnStock(float $stockCount): self
     {
         return $this->state([
-            'type' => StockType::BASE_ON_STOCK,
+            'type' => StockType::base_on_stock,
             'count' => $stockCount,
         ]);
     }

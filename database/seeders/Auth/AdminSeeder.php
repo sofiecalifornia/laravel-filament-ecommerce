@@ -23,9 +23,8 @@ class AdminSeeder extends Seeder
 
         AdminFactory::new()
             ->createOne([
-                'admin_id' => null,
                 'name' => 'Lloric Garcia',
-                'email' => 'lloricode@gmail.com',
+                'email' => 'ecommerce@lloricode.com',
                 'password' => $superAdminHashPassword,
             ])
             ->assignRole($role::findByName(config('domain.access.role.super_admin'), 'admin'));
@@ -33,29 +32,22 @@ class AdminSeeder extends Seeder
 
         AdminFactory::new()
             ->createOne([
-                'name' => 'System',
-                'email' => 'system@ecommerce.com',
-            ])
-            ->assignRole($role::findByName(config('domain.access.role.admin'), 'admin'));
-
-        AdminFactory::new()
-            ->createOne([
                 'name' => 'Admin',
-                'email' => 'admin@ecommerce.com',
+                'email' => 'admin.ecommerce@lloricode.com',
             ])
             ->assignRole($role::findByName(config('domain.access.role.admin'), 'admin'));
 
         AdminFactory::new()
             ->createOne([
                 'name' => 'Employee',
-                'email' => 'employee@ecommerce.com',
+                'email' => 'employee.ecommerce@lloricode.com',
             ])
             ->assignRole($role::findByName('employee', 'admin'));
 
         AdminFactory::new()
             ->createOne([
                 'name' => 'Employee 2',
-                'email' => 'employee2@ecommerce.com',
+                'email' => 'employee2.ecommerce@lloricode.com',
             ])
             ->assignRole($role::findByName('employee', 'admin'));
 
@@ -68,15 +60,24 @@ class AdminSeeder extends Seeder
             ->assignRole($role::findByName('demo', 'admin'));
 
         AdminFactory::new()
+            ->withGoogle2fa()
+            ->createOne([
+                'name' => 'OTP',
+                'email' => 'otp.ecommerce@lloricode.com',
+                'password' => app()->environment('local', 'testing') ? 'secret' : '3CMLPJRWJOYEDEQL',
+            ])
+            ->assignRole($role::findByName('demo', 'admin'));
+
+        AdminFactory::new()
             ->createOne([
                 'name' => 'No Role',
-                'email' => 'no-reles@ecommerce.com',
+                'email' => 'no-roles.ecommerce@lloricode.com',
             ]);
     }
 
     public static function demoEmail(): string
     {
-        return 'demo@ecommerce.com';
+        return 'demo.ecommerce@lloricode.com';
     }
 
     public static function demoPassword(): string

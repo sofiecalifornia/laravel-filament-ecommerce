@@ -1,0 +1,7 @@
+### Get All Categories
+GET {{ host }}/categories
+Accept: application/json
+
+### Show Category
+GET {{ host }}/categories/mobile
+Accept: application/json

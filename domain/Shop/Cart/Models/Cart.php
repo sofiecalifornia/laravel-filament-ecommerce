@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Domain\Shop\Cart\Models;
 
 use App\Casts\MoneyCast;
-use App\Helpers;
 use Domain\Shop\Branch\Models\Branch;
 use Domain\Shop\Customer\Models\Customer;
 use Domain\Shop\Product\Models\Product;
 use Domain\Shop\Product\Models\Sku;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\Activitylog\LogOptions;
@@ -18,20 +18,20 @@ use Spatie\Activitylog\Traits\LogsActivity;
 /**
  * Domain\Shop\Cart\Models\Cart
  *
- * @property int $id
- * @property int $customer_id
- * @property int $branch_id
- * @property int $product_id
- * @property int $sku_id
+ * @property string $uuid
+ * @property string $customer_uuid
+ * @property string $branch_uuid
+ * @property string $product_uuid
+ * @property string $sku_uuid
  * @property string $sku_code
  * @property string $product_name
- * @property float $price for money
+ * @property \Akaunting\Money\Money $price for money
  * @property float $quantity
  * @property float|null $minimum
  * @property float|null $maximum
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\Activitylog\Models\Activity> $activities
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Spatie\Activitylog\Models\Activity[] $activities
  * @property-read int|null $activities_count
  * @property-read \Domain\Shop\Branch\Models\Branch $branch
  * @property-read \Domain\Shop\Customer\Models\Customer $customer
@@ -41,31 +41,21 @@ use Spatie\Activitylog\Traits\LogsActivity;
  * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Cart\Models\Cart newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Cart\Models\Cart newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Cart\Models\Cart query()
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Cart\Models\Cart whereBranchId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Cart\Models\Cart whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Cart\Models\Cart whereCustomerId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Cart\Models\Cart whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Cart\Models\Cart whereMaximum($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Cart\Models\Cart whereMinimum($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Cart\Models\Cart wherePrice($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Cart\Models\Cart whereProductId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Cart\Models\Cart whereProductName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Cart\Models\Cart whereQuantity($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Cart\Models\Cart whereSkuCode($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Cart\Models\Cart whereSkuId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\Domain\Shop\Cart\Models\Cart whereUpdatedAt($value)
  *
  * @mixin \Eloquent
  */
 class Cart extends Model
 {
+    use HasUuids;
     use LogsActivity;
 
+    protected $primaryKey = 'uuid';
+
     protected $fillable = [
-        'customer_id',
-        'branch_id',
-        'product_id',
-        'sku_id',
+        'customer_uuid',
+        'branch_uuid',
+        'product_uuid',
+        'sku_uuid',
         'product_name',
         'sku_code',
         'price',
@@ -74,15 +64,18 @@ class Cart extends Model
         'maximum',
     ];
 
-    protected $casts = [
-        'quantity' => 'float',
-        'price' => MoneyCast::class,
-    ];
+    #[\Override]
+    protected function casts(): array
+    {
+        return [
+            'quantity' => 'float',
+            'price' => MoneyCast::class,
+        ];
+    }
 
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->useLogName(Helpers::getCurrentAuthDriver())
             ->logFillable()
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();

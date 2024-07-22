@@ -13,12 +13,29 @@ class SettingsActivityLogListener
 {
     public function handle(SavingSettings $event): void
     {
-        if ($event->originalValues === null) {
+        $old = $event->originalValues;
+
+        if (null === $old) {
             return;
         }
 
-        $attributeChanges = $event->originalValues
-            ->diff($event->properties)
+        $new = $event->properties;
+
+        $implodeArray = function (mixed $value) {
+            if (is_array($value)) {
+                sort($value);
+
+                return implode(', ', $value);
+            }
+
+            return $value;
+        };
+
+        $old = $old->map($implodeArray);
+        $new = $new->map($implodeArray);
+
+        $attributeChanges = $old
+            ->diff($new)
             ->keys()
             ->toArray();
 
@@ -27,12 +44,12 @@ class SettingsActivityLogListener
         }
 
         activity()
-            ->inLog('setting: '.$event->settings::group())
+            ->event('settings updated')
             ->causedBy(Filament::auth()->user())
             ->withProperties(
                 [
-                    'old' => Arr::only($event->originalValues->toArray(), $attributeChanges),
-                    'attributes' => Arr::only($event->properties->toArray(), $attributeChanges),
+                    'old' => Arr::only($old->toArray(), $attributeChanges),
+                    'attributes' => Arr::only($new->toArray(), $attributeChanges),
                 ]
             )
             ->log(Str::headline($event->settings::group()).' Settings Updated.');

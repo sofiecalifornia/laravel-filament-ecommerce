@@ -15,7 +15,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 final readonly class CreateOrderAction
 {
     public function __construct(
-        private GenerateReceiptNumberAction $generateReceiptNumberAction,
         private CalculateOrderTotalPriceAction $calculateOrderTotalPriceAction,
         private SaveOrderItemAction $saveOrderItemAction,
         private OrderCreatedPipelineAction $orderCreatedPipelineAction,
@@ -56,17 +55,19 @@ final readonly class CreateOrderAction
                         }
                     )
                     ->toArray()
-            )->getAmount();
+            );
 
         $order = Order::create([
-            'branch_id' => $data->branch->getKey(),
-            'customer_id' => $data->customer->getKey(),
-            'receipt_number' => $this->generateReceiptNumberAction->execute(),
+            'branch_uuid' => $data->branch->getKey(),
+            'customer_uuid' => $data->customer->getKey(),
             'notes' => $data->notes,
-            'payment_status' => PaymentStatus::PENDING,
+            'payment_status' => PaymentStatus::pending,
             'payment_method' => $data->payment_method,
-            'status' => Status::PENDING,
+            'status' => Status::pending,
+            'claim_type' => $data->claimType,
             'total_price' => $total,
+            'delivery_price' => money(0), // TODO: delivery price
+            'claim_at' => $data->claim_at,
         ]);
 
         foreach ($skus as $sku) {

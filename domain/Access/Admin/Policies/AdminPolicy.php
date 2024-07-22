@@ -75,4 +75,27 @@ class AdminPolicy
 
         return $this->checkWildcardPermissions($user);
     }
+
+    public function resendEmailVerification(User $user, Admin $admin): bool
+    {
+        if ($admin->trashed()) {
+            return false;
+        }
+
+        return $this->checkWildcardPermissions($user);
+    }
+
+    public function generateGoogleTwoFactorAuthenticatorSecretKey(User $user, Admin $admin): bool
+    {
+        if ($admin->trashed()) {
+            return false;
+        }
+
+        return $this->checkWildcardPermissions($user);
+    }
+
+    public function manageSelfGoogleTwoFactorAuthenticator(User $user): bool
+    {
+        return $this->checkWildcardPermissions($user);
+    }
 }

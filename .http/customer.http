@@ -1,0 +1,4 @@
+### Customer Profile
+GET {{ host }}/customers/profile
+Accept: application/json
+Authorization: Bearer {{ accessToken }}

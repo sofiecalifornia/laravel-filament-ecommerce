@@ -10,13 +10,14 @@ use Spatie\Activitylog\EventLogBag;
 
 class RedactHiddenAttributesFromLogChangesPipe implements LoggablePipe
 {
-    private const REDACT_VALUE = '[*REDACTED*]';
+    private const string REDACT_VALUE = '[*REDACTED*]';
 
+    #[\Override]
     public function handle(EventLogBag $event, Closure $next): EventLogBag
     {
         $hiddenAttributes = $event->model->getHidden();
 
-        if (count($hiddenAttributes) === 0) {
+        if (0 === count($hiddenAttributes)) {
             return $next($event);
         }
 

@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\Shop;
 
+use App\Http\Resources\BaseJsonApiResource;
 use Illuminate\Http\Request;
-use TiMacDonald\JsonApi\JsonApiResource;
 
 /**
  * @property-read \Domain\Shop\Customer\Models\Address $resource
  */
-class AddressResource extends JsonApiResource
+class AddressResource extends BaseJsonApiResource
 {
+    #[\Override]
     public function toAttributes(Request $request): array
     {
         return [

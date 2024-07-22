@@ -6,14 +6,20 @@ namespace App\Http\Controllers\API\Shop\Category;
 
 use App\Http\Resources\Shop\CategoryResource;
 use Domain\Shop\Category\Models\Category;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\RouteAttributes\Attributes\ApiResource;
-use TiMacDonald\JsonApi\JsonApiResourceCollection;
 
 #[ApiResource('categories', only: ['index', 'show'])]
 class CategoryController
 {
-    public function index(): JsonApiResourceCollection
+    /**
+     * @unauthenticated
+     *
+     * @return AnonymousResourceCollection<LengthAwarePaginator<CategoryResource>>
+     */
+    public function index(): mixed
     {
         return CategoryResource::collection(
             QueryBuilder::for(
@@ -36,6 +42,9 @@ class CategoryController
         );
     }
 
+    /**
+     * @unauthenticated
+     */
     public function show(string $category): CategoryResource
     {
         return CategoryResource::make(

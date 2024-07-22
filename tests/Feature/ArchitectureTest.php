@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 test('Not debugging statements are left in our code.')
-    ->expect(['dd', 'dump', 'ray', 'rd', 'die', 'eval', 'sleep'])
+    ->expect(['dd', 'dump', 'ray', 'rd', 'die', 'eval', 'sleep', 'debug', 'var_dump', 'env'])
     ->not->toBeUsed();
 
 function domainEnums(): array
@@ -62,18 +62,18 @@ function domainModels(): array
         'Domain\Shop\Stock\Models',
     ];
 };
-function domainModelQueries(): array
+function domainModelEloquentBuilder(): array
 {
     return [
-        'Domain\Access\Admin\Models\Query',
-        'Domain\Access\Role\Models\Query',
-        'Domain\Shop\Branch\Models\Query',
-        'Domain\Shop\Brand\Models\Query',
-        'Domain\Shop\Category\Models\Query',
-        'Domain\Shop\Customer\Models\Query',
-        'Domain\Shop\Order\Models\Query',
-        'Domain\Shop\Product\Models\Query',
-        'Domain\Shop\Stock\Models\Query',
+        'Domain\Access\Admin\Models\EloquentBuilder',
+        'Domain\Access\Role\Models\EloquentBuilder',
+        'Domain\Shop\Branch\Models\EloquentBuilder',
+        'Domain\Shop\Brand\Models\EloquentBuilder',
+        'Domain\Shop\Category\Models\EloquentBuilder',
+        'Domain\Shop\Customer\Models\EloquentBuilder',
+        'Domain\Shop\Order\Models\EloquentBuilder',
+        'Domain\Shop\Product\Models\EloquentBuilder',
+        'Domain\Shop\Stock\Models\EloquentBuilder',
     ];
 };
 function domainObservers(): array
@@ -144,7 +144,7 @@ test('domain actions')
     // ->toUseNothing() // ErrorException: Attempt to read property "stmts" on null ...
     ->toImplementNothing()
     ->toExtendNothing()
-    ->toBeFinal()
+//    ->toBeFinal() // this should be able to mock
     ->toBeReadonly()
     ->toHaveSuffix('Action')
     ->not->toUse('app');
@@ -163,10 +163,10 @@ test('domain models')
     ->with(fn () => domainModels())
     ->expect(fn (string $folder) => $folder)
     ->toExtend(Illuminate\Database\Eloquent\Model::class)
-    ->ignoring(domainModelQueries());
+    ->ignoring(domainModelEloquentBuilder());
 
 test('domain model queries')
-    ->with(fn () => domainModelQueries())
+    ->with(fn () => domainModelEloquentBuilder())
     ->expect(fn (string $folder) => $folder)
     ->toExtend(Illuminate\Database\Eloquent\Builder::class);
 
@@ -235,8 +235,8 @@ test('domain observers')
 //        domainRules(),
 //        domainDTOs(),
 //        [
-//            // Expecting 'Domain\Shop\Order\Models\Order' not to be used on 'Domain\Shop\Order\Exports\ExportOrder'.
-//            //at domain/Shop/Order/Exports/ExportOrder.php:7
+//            // Expecting 'Domain\Shop\Order\Models\Order' not to be used on 'Domain\Shop\Order\Exports\ExportOrderReceipt'.
+//            //at domain/Shop/Order/Exports/ExportOrderReceipt.php:7
 //            'Domain\Shop\Order\Exports',
 //            'Database\Seeders',
 //            'App\Listeners',

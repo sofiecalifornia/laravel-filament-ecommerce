@@ -1,7 +1,7 @@
 <?php
 return [
     // This is the guard used when logging in as the impersonated user.
-    'guard' => 'admin',
+    'guard' => env('FILAMENT_IMPERSONATE_GUARD', 'admin'),
 
     // After impersonating this is where we'll redirect you to.
     'redirect_to' => env('FILAMENT_IMPERSONATE_REDIRECT', 'admin'),
@@ -10,14 +10,17 @@ return [
     'leave_middleware' => env('FILAMENT_IMPERSONATE_LEAVE_MIDDLEWARE', 'web'),
 
     'banner' => [
+        // Available hooks: https://filamentphp.com/docs/3.x/support/render-hooks#available-render-hooks
+        'render_hook' => env('FILAMENT_IMPERSONATE_BANNER_RENDER_HOOK', 'panels::body.start'),
+
         // Currently supports 'dark', 'light' and 'auto'.
-        'style' => env('FILAMENT_IMPERSONATE_BANNER_STYLE', 'dark'),
+        'style' => env('FILAMENT_IMPERSONATE_BANNER_STYLE', 'auto'),
 
         // Turn this off if you want `absolute` positioning, so the banner scrolls out of view
         'fixed' => env('FILAMENT_IMPERSONATE_BANNER_FIXED', true),
 
         // Currently supports 'top' and 'bottom'.
-        'position' => env('FILAMENT_IMPERSONATE_BANNER_POSITION', 'bottom'),
+        'position' => env('FILAMENT_IMPERSONATE_BANNER_POSITION', 'top'),
 
         'styles' => [
             'light' => [

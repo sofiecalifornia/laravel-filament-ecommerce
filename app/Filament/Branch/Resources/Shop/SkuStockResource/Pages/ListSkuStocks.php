@@ -6,7 +6,7 @@ namespace App\Filament\Branch\Resources\Shop\SkuStockResource\Pages;
 
 use App\Filament\Branch\Resources\Shop\SkuStockResource;
 
-class ListSkuStocks extends \App\Filament\Resources\Shop\SkuStockResource\Pages\ListSkuStocks
+class ListSkuStocks extends \App\Filament\Admin\Resources\Shop\SkuStockResource\Pages\ListSkuStocks
 {
     protected static string $resource = SkuStockResource::class;
 }

@@ -6,18 +6,13 @@ namespace Domain\Access\Role\Actions;
 
 use Domain\Access\Role\DataTransferObjects\RoleData;
 use Domain\Access\Role\Models\Role;
-use Spatie\Permission\PermissionRegistrar;
 
 final readonly class CreateRoleAction
 {
-    public function __construct(private PermissionRegistrar $permissionRegistrar)
-    {
-    }
-
     public function execute(RoleData $roleData): Role
     {
-        /** @phpstan-ignore-next-line */
-        $role = $this->permissionRegistrar->getRoleClass()::create([
+        /** @var \Domain\Access\Role\Models\Role $role */
+        $role = Role::create([
             'name' => $roleData->name,
             'guard_name' => $roleData->guard_name,
         ]);

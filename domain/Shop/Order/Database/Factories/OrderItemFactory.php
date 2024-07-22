@@ -15,6 +15,7 @@ class OrderItemFactory extends Factory
 {
     protected $model = OrderItem::class;
 
+    #[\Override]
     public function definition(): array
     {
         return [
@@ -22,7 +23,7 @@ class OrderItemFactory extends Factory
         ];
     }
 
-    public function forSku(Sku $sku, float $quantity = null): self
+    public function forSku(Sku $sku, ?float $quantity = null): self
     {
         $quantity ??= (float) $this->faker->numberBetween(1, 5);
 

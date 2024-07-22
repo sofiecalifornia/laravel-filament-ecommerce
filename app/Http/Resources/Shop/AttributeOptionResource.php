@@ -4,22 +4,29 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\Shop;
 
+use App\Http\Resources\BaseJsonApiResource;
 use Illuminate\Http\Request;
-use TiMacDonald\JsonApi\JsonApiResource;
 
 /**
  * @property-read \Domain\Shop\Product\Models\AttributeOption $resource
  */
-class AttributeOptionResource extends JsonApiResource
+class AttributeOptionResource extends BaseJsonApiResource
 {
+    #[\Override]
     public function toAttributes(Request $request): array
     {
         return [
-            'attribute_name' => $this->when(
-                $this->resource->relationLoaded('attribute'),
-                fn () => $this->resource->attribute->name
-            ),
             'value' => $this->resource->value,
+            'label' => $this->resource->label,
+        ];
+    }
+
+    /** @return array<string, callable> */
+    #[\Override]
+    public function toRelationships(Request $request): array
+    {
+        return [
+            'attribute' => fn () => AttributeResource::make($this->resource->attribute),
         ];
     }
 }

@@ -1,0 +1,16 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="ArchitectureTest.php" type="PestRunConfigurationType">
+    <CommandLine>
+      <PhpTestInterpreterSettings>
+        <option name="interpreterName" value="Sail" />
+      </PhpTestInterpreterSettings>
+    </CommandLine>
+    <option name="pestRunnerSettings">
+      <PestRunner file="$PROJECT_DIR$/tests/Feature/ArchitectureTest.php" method="" scope="File" />
+    </option>
+    <option name="runnerSettings">
+      <PhpTestRunnerSettings file="$PROJECT_DIR$/tests/Feature/ArchitectureTest.php" method="" scope="File" />
+    </option>
+    <method v="2" />
+  </configuration>
+</component>

@@ -7,6 +7,8 @@
 /vendor
 .env
 .env.backup
+.env.local
+.env.staging
 .env.production
 .phpunit.result.cache
 Homestead.json
@@ -28,3 +30,9 @@ coverage.xml
 /public/js
 
 *.sql
+
+# im not FE dev
+yarn.lock
+
+# tinkerwell generated
+.phpactor.json

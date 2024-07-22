@@ -24,8 +24,9 @@ use Spatie\RouteAttributes\Attributes\Middleware;
 use Spatie\RouteAttributes\Attributes\Post;
 use Spatie\RouteAttributes\Attributes\Prefix;
 use Spatie\RouteAttributes\Attributes\Put;
+use Spatie\RouteAttributes\Attributes\ScopeBindings;
 
-#[Prefix('carts/{enabledBranch}'), Middleware('auth:sanctum')]
+#[Prefix('branches/{enabledBranch}/carts'), Middleware('auth:sanctum')]
 class CartController
 {
     #[Get('/', name: 'carts.index')]
@@ -40,8 +41,8 @@ class CartController
                     ->whereBelongsTo($customer)
                     ->whereBelongsTo($enabledBranch)
             )
-                ->allowedFilters(['sku_id'])
-                ->allowedSorts(['sku_id', 'quantity'])
+                ->allowedFilters(['sku_uuid'])
+                ->allowedSorts(['sku_uuid', 'quantity'])
                 ->defaultSort('updated_at')
                 ->allowedIncludes(['sku.product'])
                 ->jsonPaginate()
@@ -61,7 +62,7 @@ class CartController
             ->execute(new CreateCartData(
                 branch: $enabledBranch,
                 customer: $customer,
-                sku_id: $request->input('sku_id'),
+                sku_uuid: $request->input('sku_uuid'),
                 quantity: (float) $request->input('quantity'),
             )));
 
@@ -72,13 +73,10 @@ class CartController
      * @throws \Throwable
      */
     #[Put('{cart}', name: 'carts.update')]
+    #[ScopeBindings]
     public function update(CartEditRequest $request, Branch $enabledBranch, Cart $cart): mixed
     {
         Gate::authorize('update', $cart);
-
-        if (! $cart->branch->is($enabledBranch)) {
-            abort(404);
-        }
 
         DB::transaction(fn () => app(EditCartAction::class)
             ->execute($cart, new EditCartData(
@@ -88,17 +86,25 @@ class CartController
         return CartResource::make($cart->refresh());
     }
 
+    #[Delete('/empty', name: 'carts.empty')]
+    public function empty(Branch $enabledBranch): mixed
+    {
+        /** @var \Domain\Shop\Customer\Models\Customer $customer */
+        $customer = Auth::user();
+
+        $customer->carts->each->delete();
+
+        return response()->noContent();
+    }
+
     /**
      * @throws \Throwable
      */
     #[Delete('{cart}', name: 'carts.destroy')]
+    #[ScopeBindings]
     public function destroy(Branch $enabledBranch, Cart $cart): mixed
     {
         Gate::authorize('delete', $cart);
-
-        if (! $cart->branch->is($enabledBranch)) {
-            abort(404);
-        }
 
         DB::transaction(fn () => app(DeleteCartAction::class)->execute($cart));
 

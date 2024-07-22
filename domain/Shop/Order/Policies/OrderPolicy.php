@@ -52,7 +52,12 @@ class OrderPolicy
         return $this->checkWildcardPermissions($user);
     }
 
-    public function print(Admin $user, Order $order): bool
+    public function printReceipt(Admin $user, Order $order): bool
+    {
+        return $this->checkWildcardPermissions($user);
+    }
+
+    public function downloadInvoice(Admin $user, Order $order): bool
     {
         return $this->checkWildcardPermissions($user);
     }

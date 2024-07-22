@@ -2,19 +2,18 @@
 
 declare(strict_types=1);
 
+use Database\Factories\Shop\TagFactory;
 use Domain\Shop\Branch\Database\Factories\BranchFactory;
 use Domain\Shop\Brand\Database\Factories\BrandFactory;
-use Domain\Shop\Product\Database\Factories\AttributeFactory;
-use Domain\Shop\Product\Database\Factories\AttributeOptionFactory;
+use Domain\Shop\Product\Database\AttributeOptionForProductSku;
 use Domain\Shop\Product\Database\Factories\ProductFactory;
 use Domain\Shop\Product\Database\Factories\SkuFactory;
+use Domain\Shop\Product\Enums\AttributeFieldType;
 use Domain\Shop\Product\Models\Product;
 use Domain\Shop\Stock\Database\Factories\SkuStockFactory;
 
 use function Pest\Laravel\assertDatabaseEmpty;
 use function Pest\Laravel\getJson;
-
-beforeEach(fn () => config(['media-library.version_urls' => false]));
 
 dataset(
     'includes',
@@ -29,6 +28,7 @@ dataset(
         'skus.skuStocks',
         'category',
         'category.parent',
+        'tags',
     ]
 );
 
@@ -60,41 +60,48 @@ it('show', function (?string $include) {
 
 function seedProduct(): Product
 {
-    return ProductFactory::new([
+    $product = ProductFactory::new([
         'parent_sku' => 'sku sample',
         'name' => 'Samsung Galaxy S21',
         'description' => 'sample description',
     ])
+        ->has(
+            TagFactory::new(['name' => 'test tag'])
+        )
         ->inStockStatus()
         ->hasSpecificMedia()
         ->for(
             BrandFactory::new(['name' => 'test brand'])
                 ->hasSpecificMedia()
         )
-        ->hasSku(
-            priceOrSkuFactory: SkuFactory::new([
-                'code' => 'sample-code',
-                'price' => 349,
-                'minimum' => 1,
-                'maximum' => 10,
-            ])
-                ->hasSpecificMedia()
-                ->has(
-                    SkuStockFactory::new()
-                        ->unlimited()
-                        ->for(
-                            BranchFactory::new()
-                                ->enabled()
-                                ->hasSpecificMedia()
-                        )
-                ),
-            attributeOptionFactories: [
-                AttributeOptionFactory::new(['value' => 'Blue'])
-                    ->for(
-                        AttributeFactory::new(['name' => 'Color'])
-                            ->has(AttributeOptionFactory::new(['value' => 'Red']))
-                    ),
-            ],
-        )
         ->createOne();
+
+    SkuFactory::forProduct(
+        product: $product,
+        priceOrSkuFactory: SkuFactory::new([
+            'code' => 'sample-code',
+            'price' => 349,
+            'minimum' => 1,
+            'maximum' => 10,
+        ])
+            ->hasSpecificMedia()
+            ->has(
+                SkuStockFactory::new()
+                    ->unlimited()
+                    ->for(
+                        BranchFactory::new()
+                            ->enabled()
+                            ->hasSpecificMedia()
+                    )
+            ),
+        attributeOptions: [
+            new AttributeOptionForProductSku(
+                'Color',
+                'Blue',
+                attributeFieldType: AttributeFieldType::color_picker
+            ),
+        ],
+    );
+
+    return $product;
 }

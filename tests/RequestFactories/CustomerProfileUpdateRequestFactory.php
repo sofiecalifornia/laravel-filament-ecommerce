@@ -9,6 +9,7 @@ use Worksome\RequestFactories\RequestFactory;
 
 class CustomerProfileUpdateRequestFactory extends RequestFactory
 {
+    #[\Override]
     public function definition(): array
     {
         return [

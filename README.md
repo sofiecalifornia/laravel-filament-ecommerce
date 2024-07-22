@@ -3,7 +3,7 @@
 
 ## Requirements
 
-- PHP 8.2.6 or later
+- PHP 8.3.1 or later
 - Composer v2
 - MySQL
 
@@ -52,6 +52,6 @@ The project is now installed and ready to use. You can access it by navigating t
 
 10. Login in admin panel by using credencials
 ```
-username: lloricode@gmail.com
+username: ecommerce@lloricode.com
 password: secret
 ```

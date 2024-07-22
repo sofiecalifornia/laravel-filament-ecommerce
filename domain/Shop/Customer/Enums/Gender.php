@@ -9,8 +9,8 @@ use Illuminate\Support\Str;
 
 enum Gender: string implements HasLabel
 {
-    case FEMALE = 'female';
-    case MALE = 'male';
+    case female = 'female';
+    case male = 'male';
 
     public function getLabel(): ?string
     {

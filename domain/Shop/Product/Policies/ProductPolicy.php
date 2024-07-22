@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Domain\Shop\Product\Policies;
 
-use App\Filament\Support\TenantHelper;
+use App\Filament\Admin\Support\TenantHelper;
 use Domain\Access\Admin\Models\Admin;
 use Domain\Access\Role\ChecksWildcardPermissions;
 use Domain\Shop\Product\Models\Product;
@@ -20,7 +20,7 @@ class ProductPolicy
 
     public function create(Admin $user): bool
     {
-        if (TenantHelper::getBranch() !== null) {
+        if (null !== TenantHelper::getBranch()) {
             return false;
         }
 
@@ -29,7 +29,7 @@ class ProductPolicy
 
     public function update(Admin $user, Product $product): bool
     {
-        if (TenantHelper::getBranch() !== null) {
+        if (null !== TenantHelper::getBranch()) {
             return false;
         }
 
@@ -38,7 +38,7 @@ class ProductPolicy
 
     public function delete(Admin $user, Product $product): bool
     {
-        if (TenantHelper::getBranch() !== null) {
+        if (null !== TenantHelper::getBranch()) {
             return false;
         }
 
@@ -47,7 +47,7 @@ class ProductPolicy
 
     public function restore(Admin $user, Product $product): bool
     {
-        if (TenantHelper::getBranch() !== null) {
+        if (null !== TenantHelper::getBranch()) {
             return false;
         }
 
@@ -56,7 +56,7 @@ class ProductPolicy
 
     public function forceDelete(Admin $user, Product $product): bool
     {
-        if (TenantHelper::getBranch() !== null) {
+        if (null !== TenantHelper::getBranch()) {
             return false;
         }
 

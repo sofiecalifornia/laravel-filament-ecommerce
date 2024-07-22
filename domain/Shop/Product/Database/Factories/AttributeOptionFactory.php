@@ -14,11 +14,20 @@ class AttributeOptionFactory extends Factory
 {
     protected $model = AttributeOption::class;
 
+    #[\Override]
     public function definition(): array
     {
         return [
             'value' => $this->faker->unique()->name(),
         ];
+    }
+
+    public function withAttributeName(string $name): self
+    {
+        return $this->for(
+            AttributeFactory::new()
+                ->createOne(['name' => $name])
+        );
     }
 
     public function hasAttribute(string $name): self

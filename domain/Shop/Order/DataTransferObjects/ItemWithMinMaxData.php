@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Domain\Shop\Order\DataTransferObjects;
 
+use Akaunting\Money\Money;
 use Domain\Shop\Order\Models\OrderItem;
 
 final readonly class ItemWithMinMaxData
 {
     public function __construct(
-        public float $price,
+        public Money $price,
         public float $quantity,
         public ?float $minimum,
         public ?float $maximum,

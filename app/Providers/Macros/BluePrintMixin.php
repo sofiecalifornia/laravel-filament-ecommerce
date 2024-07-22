@@ -16,7 +16,7 @@ class BluePrintMixin
 {
     public function phpEnum(): Closure
     {
-        return function ($column, string $comment = null): ColumnDefinition {
+        return function ($column, ?string $comment = null): ColumnDefinition {
             $comment = is_null($comment)
                 ? 'PHP backed enum'
                 : $comment.' (PHP backed enum)';
@@ -27,7 +27,7 @@ class BluePrintMixin
 
     public function eloquentSortable(): Closure
     {
-        return function ($column = null, string $comment = null): ColumnDefinition {
+        return function ($column = null, ?string $comment = null): ColumnDefinition {
             $comment = is_null($comment)
                 ? 'manage by spatie/eloquent-sortable'
                 : $comment.' (manage by spatie/eloquent-sortable)';
@@ -40,12 +40,12 @@ class BluePrintMixin
 
     public function money(): Closure
     {
-        return function ($column, string $comment = null): ColumnDefinition {
+        return function ($column, ?string $comment = null): ColumnDefinition {
             $comment = is_null($comment)
                 ? 'for money'
                 : $comment.' (for money)';
 
-            return $this->unsignedInteger($column)->comment($comment);
+            return $this->json($column)->comment($comment);
         };
     }
 }

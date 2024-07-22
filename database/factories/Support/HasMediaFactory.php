@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories\Support;
 
+use Database\Factories\StaticSupport;
 use Exception;
 use Faker\Factory;
 use Smknstd\FakerPicsumImages\FakerPicsumImagesProvider;
@@ -12,7 +13,7 @@ use Spatie\MediaLibrary\MediaCollections\Exceptions\UnreachableUrl;
 
 trait HasMediaFactory
 {
-    public function hasRandomMedia(int $maxCount = null, string $collectionName = 'image'): self
+    public function hasRandomMedia(?int $maxCount = null, string $collectionName = 'image'): static
     {
         return $this
             ->afterCreating(
@@ -24,7 +25,7 @@ trait HasMediaFactory
             );
     }
 
-    public function hasSpecificMedia(): self
+    public function hasSpecificMedia(): static
     {
         return $this
             ->afterCreating(
@@ -44,7 +45,7 @@ trait HasMediaFactory
         int $maximum = 3,
     ): void {
 
-        if (app()->runningUnitTests()) {
+        if (app()->runningUnitTests() || app()->isLocal()) {
             self::seedSpecificMedia(model: $model, collectionName: $collectionName);
 
             return;
@@ -77,13 +78,22 @@ trait HasMediaFactory
         HasMedia $model,
         string $collectionName = 'image',
     ): void {
-        retry(
-            3,
-            fn () => $model
-                ->addMediaFromUrl(self::imageUrl(), [])
-                ->toMediaCollection($collectionName),
-            when: fn (Exception $exception): bool => $exception instanceof UnreachableUrl
-        );
+
+        if (! StaticSupport::$hasNetworkAccess) {
+            self::seedSpecificMedia($model, $collectionName);
+
+            return;
+        }
+
+        try {
+            $model
+                ->addMediaFromUrl(self::imageUrl())
+                ->toMediaCollection($collectionName);
+        } catch (UnreachableUrl) {
+
+            StaticSupport::$hasNetworkAccess = false;
+
+        }
     }
 
     private static function imageUrl(): string

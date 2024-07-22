@@ -30,7 +30,7 @@ final readonly class DecrementSkuStockAction
         /** @var \Domain\Shop\Stock\Models\SkuStock $skuStock */
         $skuStock = $orderItem->sku->skuStocks[0];
 
-        if ($skuStock->type === StockType::BASE_ON_STOCK) {
+        if (StockType::base_on_stock === $skuStock->type) {
 
             $skuStock->decrement('count', $orderItem->quantity);
 

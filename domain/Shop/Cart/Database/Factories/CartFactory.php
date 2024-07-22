@@ -17,6 +17,7 @@ class CartFactory extends Factory
 {
     protected $model = Cart::class;
 
+    #[\Override]
     public function definition(): array
     {
         return [
@@ -26,14 +27,14 @@ class CartFactory extends Factory
     public function withCustomer(Customer $customer): self
     {
         return $this->state([
-            'customer_id' => $customer->getKey(),
+            'customer_uuid' => $customer->getKey(),
         ]);
     }
 
     public function withBranch(Branch $branch): self
     {
         return $this->state([
-            'branch_id' => $branch->getKey(),
+            'branch_uuid' => $branch->getKey(),
         ]);
     }
 
@@ -47,8 +48,8 @@ class CartFactory extends Factory
     public function withSku(Sku $sku): self
     {
         return $this->state([
-            'product_id' => $sku->product->getKey(),
-            'sku_id' => $sku->getKey(),
+            'product_uuid' => $sku->product->getKey(),
+            'sku_uuid' => $sku->getKey(),
             'sku_code' => $sku->code,
             'product_name' => $sku->product->name,
             'price' => $sku->price,

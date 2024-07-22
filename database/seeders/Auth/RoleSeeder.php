@@ -6,36 +6,62 @@ namespace Database\Seeders\Auth;
 
 use Domain\Access\Role\Support;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\PermissionRegistrar;
+use Illuminate\Support\Facades\Artisan;
+use Spatie\Permission\Commands\CreateRole;
+use Spatie\Permission\Contracts\Permission as PermissionContract;
 
 class RoleSeeder extends Seeder
 {
+    public function __construct(
+        private readonly PermissionContract $permissionContract,
+    ) {
+    }
+
+    /**
+     * @throws \Exception
+     */
     public function run(): void
     {
-        $permissionRegistrar = app(PermissionRegistrar::class);
-
-        $role = $permissionRegistrar->getRoleClass();
-
         foreach (config('domain.access.role') as $roleName) {
-            $role::findOrCreate(name: $roleName, guardName: 'admin');
+            Artisan::call(CreateRole::class, [
+                'name' => $roleName,
+                'guard' => 'admin',
+                'permissions' => config('domain.access.role.admin') === $roleName
+                    ? $this->permissionContract
+                        ->where('guard_name', 'admin')
+                        ->pluck('name')
+                        ->implode('|')
+                    : null,
+            ]);
         }
 
-        $role::findByName(config('domain.access.role.admin'), guardName: 'admin')
-            ->syncPermissions($permissionRegistrar->getPermissions()->pluck('name'));
+        Artisan::call(CreateRole::class, [
+            'name' => 'employee',
+            'guard' => 'admin',
+            'permissions' => implode('|', [
+                Support::getPanelPermissionName('admin'),
+                'order',
+                'customer',
+            ]),
+        ]);
 
-        $role::findOrCreate(name: 'employee', guardName: 'admin')
-            ->syncPermissions(['order', 'customer']);
-
-        $role::findOrCreate(name: 'branch', guardName: 'admin')
-            ->syncPermissions([
+        Artisan::call(CreateRole::class, [
+            'name' => 'branch',
+            'guard' => 'admin',
+            'permissions' => implode('|', [
+                Support::getPanelPermissionName('branch'),
                 'product.viewAny',
                 'order',
                 'skuStock',
-            ]);
+            ]),
+        ]);
 
-        $role::findOrCreate(name: 'demo', guardName: 'admin')
-            ->syncPermissions([
+        Artisan::call(CreateRole::class, [
+            'name' => 'demo',
+            'guard' => 'admin',
+            'permissions' => implode('|', [
                 'admin.viewAny',
+                ...app()->isLocal() ? ['admin.manageSelfGoogleTwoFactorAuthenticator'] : [],
                 'role.viewAny',
                 'order',
                 'customer',
@@ -46,8 +72,11 @@ class RoleSeeder extends Seeder
                 'product',
                 'attribute',
                 'skuStock',
+                Support::PANELS,
                 Support::WIDGETS,
                 Support::PAGES,
-            ]);
+            ]),
+        ]);
+
     }
 }

@@ -13,10 +13,19 @@ return [
      * Optionally, you can specify group configuration by using key/values
      */
     'directories' => [
+//        app_path('Http/Controllers/Frontend') => [
+//            'as' => 'frontend.',
+//            'middleware' =>['web'],
+//        ],
+        app_path('Http/Controllers/Admin') => [
+            'as' => 'admin.',
+            'prefix' => 'admin',
+            'middleware' =>['web', 'auth:admin'],
+        ],
         app_path('Http/Controllers/API') => [
             'as' => 'api.',
-           'prefix' => 'api',
-           'middleware' => 'api',
+            'prefix' => 'api',
+            'middleware' => 'api',
         ],
     ],
 

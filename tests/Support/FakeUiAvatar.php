@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 
 final class FakeUiAvatar implements AvatarProvider
 {
+    #[\Override]
     public function get(Model $user): string
     {
         return (string) $user->getKey();

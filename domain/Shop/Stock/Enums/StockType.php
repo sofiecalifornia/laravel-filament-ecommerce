@@ -11,25 +11,25 @@ use Illuminate\Support\Str;
 
 enum StockType: string implements HasColor, HasIcon, HasLabel
 {
-    case UNLIMITED = 'unlimited';
-    case BASE_ON_STOCK = 'base-on-stock';
-    case UNAVAILABLE = 'unavailable';
+    case unlimited = 'unlimited';
+    case base_on_stock = 'base_on_stock';
+    case unavailable = 'unavailable';
 
     public function getColor(): string|array|null
     {
         return match ($this) {
-            self::UNLIMITED => 'success',
-            self::BASE_ON_STOCK => 'warning',
-            self::UNAVAILABLE => 'danger',
+            self::unlimited => 'success',
+            self::base_on_stock => 'warning',
+            self::unavailable => 'danger',
         };
     }
 
     public function getIcon(): ?string
     {
         return match ($this) {
-            self::UNLIMITED => 'heroicon-o-check-circle',
-            self::BASE_ON_STOCK => 'heroicon-o-clock',
-            self::UNAVAILABLE => 'heroicon-o-x-circle',
+            self::unlimited => 'heroicon-o-check-circle',
+            self::base_on_stock => 'heroicon-o-clock',
+            self::unavailable => 'heroicon-o-x-circle',
         };
     }
 

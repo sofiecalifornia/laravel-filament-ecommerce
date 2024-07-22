@@ -260,6 +260,18 @@ return [
         'backup:monitor',
         'filament-excel:prune',
         'about',
+        'themes:upgrade',
+        'icons:cache',
+        'icons:clear',
+        'filament:clear-cached-components',
+        'filament:cache-components',
+        'db:seed',
+        'app:horizon:clear',
+        'horizon:clear',
+        'permission:create-role',
+        'sanctum:prune-expired',
+        'pulse:restart',
+        'pulse:check',
     ],
 
     /*
@@ -281,6 +293,8 @@ return [
         'livewire*',
         'filament*',
         'admin/log-viewer*',
+        'up',
+        'rss',
     ],
 
     /*
@@ -294,7 +308,8 @@ return [
     */
 
     'ignore_jobs' => [
-        \Spatie\Health\Jobs\HealthQueueJob::class,
-        \ShuvroRoy\FilamentSpatieLaravelBackup\Jobs\CreateBackupJob::class,
+        Spatie\Health\Jobs\HealthQueueJob::class,
+        ShuvroRoy\FilamentSpatieLaravelBackup\Jobs\CreateBackupJob::class,
+        Spatie\MediaLibrary\Conversions\Jobs\PerformConversionsJob::class
     ],
 ];

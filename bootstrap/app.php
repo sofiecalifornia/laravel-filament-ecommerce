@@ -2,56 +2,80 @@
 
 declare(strict_types=1);
 
-/*
-|--------------------------------------------------------------------------
-| Create The Application
-|--------------------------------------------------------------------------
-|
-| The first thing we will do is create a new Laravel application instance
-| which serves as the "glue" for all the components of Laravel, and is
-| the IoC container for the system binding all of the various parts.
-|
-*/
+use App\Exceptions\DeletingResourceException;
+use Filament\Facades\Filament;
+use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Foundation\Application;
+use Illuminate\Foundation\Configuration\Exceptions;
+use Illuminate\Foundation\Configuration\Middleware;
+use Inspector\Laravel\Middleware\WebRequestMonitoring;
+use Laravel\Horizon\Console\SnapshotCommand as HorizonSnapshotCommand;
+use Laravel\Sanctum\Console\Commands\PruneExpired as SanctumPruneExpired;
+use Laravel\Telescope\Console\PruneCommand as TelescopePruneCommand;
+use Laravel\Telescope\TelescopeServiceProvider;
+use League\Flysystem\UnableToRetrieveMetadata;
+use Sentry\Laravel\Integration;
+use Spatie\Backup\Commands\MonitorCommand as SpatieBackUpMonitor;
+use Spatie\Health\Commands\DispatchQueueCheckJobsCommand as SpatieHealthDispatchQueueCheckJobsCommand;
+use Spatie\Health\Commands\ScheduleCheckHeartbeatCommand as SpatieHealthScheduleCheckHeartbeatCommand;
 
-$app = new Illuminate\Foundation\Application(
-    $_ENV['APP_BASE_PATH'] ?? dirname(__DIR__)
-);
+return Application::configure(basePath: dirname(__DIR__))
+    ->withRouting(
+        web: __DIR__.'/../routes/web.php',
+        commands: __DIR__.'/../routes/console.php',
+        health: '/up',
+    )
+    ->withMiddleware(function (Middleware $middleware) {
 
-/*
-|--------------------------------------------------------------------------
-| Bind Important Interfaces
-|--------------------------------------------------------------------------
-|
-| Next, we need to bind some important interfaces into the container so
-| we will be able to resolve them when needed. The kernels serve the
-| incoming requests to this application from both the web and CLI.
-|
-*/
+        $middleware
+            ->append([
+                WebRequestMonitoring::class,
+            ])
+            ->throttleApi('60,1')
+            ->redirectGuestsTo(fn () => Filament::getLoginUrl())
+            ->validateCsrfTokens(except: [
+                'support-bubble',
+            ]);
 
-$app->singleton(
-    Illuminate\Contracts\Http\Kernel::class,
-    App\Http\Kernel::class
-);
+    })
+    ->withExceptions(function (Exceptions $exceptions) {
 
-$app->singleton(
-    Illuminate\Contracts\Console\Kernel::class,
-    App\Console\Kernel::class
-);
+        Integration::handles($exceptions);
 
-$app->singleton(
-    Illuminate\Contracts\Debug\ExceptionHandler::class,
-    App\Exceptions\Handler::class
-);
+        $exceptions
+            ->dontReport([
+                DeletingResourceException::class,
+            ])
+            ->reportable(function (UnableToRetrieveMetadata $e) {
+                abort(404, trans('File not found.'));
+            });
 
-/*
-|--------------------------------------------------------------------------
-| Return The Application
-|--------------------------------------------------------------------------
-|
-| This script returns the application instance. The instance is given to
-| the calling script so we can separate the building of the instances
-| from the actual running of the application and sending responses.
-|
-*/
+    })
+    ->withSchedule(function (Schedule $schedule) {
 
-return $app;
+        $schedule->command(SanctumPruneExpired::class, ['--hours' => 24])
+            ->daily();
+
+        $schedule->command(HorizonSnapshotCommand::class)
+            ->everyMinute();
+
+        $schedule->command(SpatieHealthDispatchQueueCheckJobsCommand::class)
+            ->everyMinute();
+
+        $schedule->command(SpatieBackUpMonitor::class)
+            ->at('03:00');
+
+        if (class_exists(TelescopeServiceProvider::class)) {
+            $schedule->command(
+                TelescopePruneCommand::class,
+                ['--hours' => 48]
+            )
+                ->daily();
+        }
+
+        // We recommend to put this command as the very last command in your schedule.
+        // https://spatie.be/docs/laravel-health/available-checks/schedule
+        $schedule->command(SpatieHealthScheduleCheckHeartbeatCommand::class)
+            ->everyMinute();
+    })
+    ->create();

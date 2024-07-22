@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Domain\Shop\Order\Database\Factories;
 
-use Domain\Access\Admin\Database\Factories\AdminFactory;
+use Domain\Shop\Branch\Database\Factories\BranchFactory;
 use Domain\Shop\Customer\Database\Factories\CustomerFactory;
 use Domain\Shop\Order\Actions\CalculateOrderTotalPriceAction;
-use Domain\Shop\Order\Actions\GenerateReceiptNumberAction;
 use Domain\Shop\Order\DataTransferObjects\ItemWithMinMaxData;
+use Domain\Shop\Order\Enums\ClaimType;
 use Domain\Shop\Order\Enums\PaymentStatus;
 use Domain\Shop\Order\Enums\Status;
 use Domain\Shop\Order\Models\Order;
@@ -25,21 +25,23 @@ class OrderFactory extends Factory
 {
     protected $model = Order::class;
 
-    private static int $receiptCount = 1;
-
+    #[\Override]
     public function definition(): array
     {
         return [
-            'customer_id' => CustomerFactory::new(),
-            'admin_id' => AdminFactory::new(),
-            'receipt_number' => app(GenerateReceiptNumberAction::class)->execute(self::$receiptCount++),
+            'customer_uuid' => CustomerFactory::new(),
+            'branch_uuid' => BranchFactory::new(),
             'notes' => $this->faker->sentence(10),
             'payment_status' => Arr::random(PaymentStatus::cases()),
             'status' => fn (array $attributes) => match ($attributes['payment_status']) {
-                PaymentStatus::PAID => Status::COMPLETED,
-                PaymentStatus::PENDING, PaymentStatus::UNPAID => Arr::random(Arr::except(Status::cases(), [Status::COMPLETED->value])),
-                default => Status::FAILED,
+                PaymentStatus::paid => Status::completed,
+                PaymentStatus::pending, PaymentStatus::unpaid => Arr::random(Arr::except(Status::cases(), [Status::completed->value])),
+                default => Status::failed,
             },
+            'delivery_price' => money(0),
+            'total_price' => money(0),
+            'claim_at' => $this->faker->dateTimeBetween('now', '+1 week'),
+            'claim_type' => ClaimType::delivery,
         ];
     }
 
@@ -63,6 +65,7 @@ class OrderFactory extends Factory
         return $self;
     }
 
+    #[\Override]
     public function configure(): self
     {
         return parent::configure()
@@ -76,8 +79,7 @@ class OrderFactory extends Factory
                             $order->orderItems
                                 ->map(fn (OrderItem $orderItem): ItemWithMinMaxData => ItemWithMinMaxData::fromOrderItem($orderItem))
                                 ->toArray()
-                        )
-                        ->getAmount(),
+                        ),
                 ]);
             });
     }
