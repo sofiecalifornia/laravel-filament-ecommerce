@@ -43,7 +43,7 @@ class AttributeResource extends Resource
                             ->unique(ignoreRecord: true)
                             ->required(),
                     ])
-                    ->columnSpan(['lg' => fn (?Attribute $record) => $record === null ? 3 : 2]),
+                    ->columnSpan(['lg' => fn (?Attribute $record) => null === $record ? 3 : 2]),
                 Forms\Components\Section::make()
                     ->schema([
                         Forms\Components\Placeholder::make('created_at')

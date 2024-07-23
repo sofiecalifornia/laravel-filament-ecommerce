@@ -21,7 +21,7 @@ final class PermissionSchema
 
     public static function schema(?string $guardName): array
     {
-        if ($guardName === null) {
+        if (null === $guardName) {
             return [
                 Forms\Components\Placeholder::make(trans('Select guard name first before selecting permissions')),
             ];
@@ -75,7 +75,7 @@ final class PermissionSchema
                 })
                 ->afterStateHydrated(function (Forms\Components\Toggle $component, ?Role $record): void {
 
-                    if ($record === null) {
+                    if (null === $record) {
                         $component->state(false);
 
                         return;
@@ -111,7 +111,7 @@ final class PermissionSchema
                                         ->afterStateHydrated(function (Forms\Components\Toggle $component, ?Role $record) use (
                                             $parentPermission
                                         ): void {
-                                            if ($record === null) {
+                                            if (null === $record) {
                                                 $component->state(false);
 
                                                 return;
@@ -154,7 +154,7 @@ final class PermissionSchema
                                                     $parentPermission
                                                 ): void {
 
-                                                    if ($record === null) {
+                                                    if (null === $record) {
                                                         $component->state([]);
 
                                                         return;
@@ -289,7 +289,7 @@ final class PermissionSchema
         $selectAll = true;
 
         foreach (self::permissionGroup() as $parentPermission => $permissionAbilities) {
-            if ($get($parentPermission) === false) {
+            if (false === $get($parentPermission)) {
                 $selectAll = false;
 
                 break;

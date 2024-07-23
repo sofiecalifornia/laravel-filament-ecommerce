@@ -43,7 +43,7 @@ class CustomerResource extends Resource
                     ->schema(CustomerSchema::schema())
                     ->columns(2)
                     ->columnSpan([
-                        'lg' => fn (?Customer $record) => $record === null ? 3 : 2,
+                        'lg' => fn (?Customer $record) => null === $record ? 3 : 2,
                     ]),
                 Forms\Components\Section::make()
                     ->schema([

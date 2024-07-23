@@ -18,7 +18,7 @@ class CheckMainAdminPanel
         /** @var \Domain\Access\Admin\Models\Admin|null $admin */
         $admin = Filament::auth()->user();
 
-        if ($admin !== null && $admin->isBranch()) {
+        if (null !== $admin && $admin->isBranch()) {
             abort(404, 'You are not allowed to access this page.');
         }
 

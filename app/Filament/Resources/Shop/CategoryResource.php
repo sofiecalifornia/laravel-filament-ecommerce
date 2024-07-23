@@ -71,7 +71,7 @@ class CategoryResource extends Resource
                             ->collection('image')
                             ->disk(config('media-library.disk_name')),
                     ])
-                    ->columnSpan(['lg' => fn (?Category $record) => $record === null ? 3 : 2]),
+                    ->columnSpan(['lg' => fn (?Category $record) => null === $record ? 3 : 2]),
                 Forms\Components\Section::make()
                     ->schema([
                         Forms\Components\Placeholder::make('created_at')

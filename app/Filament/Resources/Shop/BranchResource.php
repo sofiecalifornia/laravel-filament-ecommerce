@@ -64,7 +64,7 @@ class BranchResource extends Resource
                             ->collection('panel')
                             ->disk(config('media-library.disk_name')),
 
-                    ])->columnSpan(['lg' => fn (?Branch $record) => $record === null ? 3 : 2]),
+                    ])->columnSpan(['lg' => fn (?Branch $record) => null === $record ? 3 : 2]),
                 Forms\Components\Section::make()
                     ->schema([
                         Forms\Components\Placeholder::make('created_at')

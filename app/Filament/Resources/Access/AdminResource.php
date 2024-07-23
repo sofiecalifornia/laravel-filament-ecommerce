@@ -107,7 +107,7 @@ class AdminResource extends Resource
                                 if (is_array($value)) {
                                     $value = $value[0] ?? null;
 
-                                    if ($value === null) {
+                                    if (null === $value) {
                                         return;
                                     }
                                 }
@@ -142,7 +142,7 @@ class AdminResource extends Resource
                             ->searchable()
                             ->default('Asia/Manila'),
                     ])
-                    ->columnSpan(['lg' => fn (?Admin $record) => $record === null ? 3 : 2]),
+                    ->columnSpan(['lg' => fn (?Admin $record) => null === $record ? 3 : 2]),
 
                 Forms\Components\Section::make()
                     ->schema([

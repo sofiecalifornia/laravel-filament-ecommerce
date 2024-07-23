@@ -34,7 +34,7 @@ final class OrderSchema
         Form $form,
         Action $submitAction,
         Action $cancelAction,
-        Branch $tenantBranch = null,
+        ?Branch $tenantBranch = null,
     ): Form {
         return $form->schema([
             Forms\Components\Hidden::make('total_price')
@@ -65,7 +65,7 @@ final class OrderSchema
             ->columns(4);
     }
 
-    public static function schemaDetails(bool $hasCustomer = true, Branch $tenantBranch = null): array
+    public static function schemaDetails(bool $hasCustomer = true, ?Branch $tenantBranch = null): array
     {
         return [
 
@@ -98,7 +98,7 @@ final class OrderSchema
                     fn (Builder $query) => $query
                         ->where('status', BranchStatus::ENABLED)
                 )
-                ->visible($tenantBranch === null)
+                ->visible(null === $tenantBranch)
                 ->searchable()
                 ->preload()
                 ->required()
@@ -128,7 +128,7 @@ final class OrderSchema
         ];
     }
 
-    public static function schemaItems(Branch $tenantBranch = null): array
+    public static function schemaItems(?Branch $tenantBranch = null): array
     {
         return [
             Forms\Components\Repeater::make('orderItems')
@@ -140,7 +140,7 @@ final class OrderSchema
         ];
     }
 
-    private static function inputItems(Branch $tenantBranch = null): array
+    private static function inputItems(?Branch $tenantBranch = null): array
     {
         return [
             Forms\Components\Select::make('sku_id')
@@ -161,7 +161,7 @@ final class OrderSchema
                 ->afterStateHydrated(
                     function (Forms\Set $set, ?int $state, ?OrderItem $record): void {
 
-                        if ($record !== null) {
+                        if (null !== $record) {
                             return;
                         }
 
@@ -172,13 +172,13 @@ final class OrderSchema
                 ->afterStateUpdated(
                     function (Forms\Set $set, $state, ?OrderItem $record): void {
 
-                        if ($record !== null) {
+                        if (null !== $record) {
                             return;
                         }
 
                         $sku = Sku::whereKey($state)->first();
 
-                        if ($sku === null) {
+                        if (null === $sku) {
                             return;
                         }
 

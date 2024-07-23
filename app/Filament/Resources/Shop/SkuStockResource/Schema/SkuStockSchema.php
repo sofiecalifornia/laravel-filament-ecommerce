@@ -19,7 +19,7 @@ final class SkuStockSchema
     {
     }
 
-    public static function form(Form $form, Branch $tenantBranch = null): Form
+    public static function form(Form $form, ?Branch $tenantBranch = null): Form
     {
         return $form
             ->schema([
@@ -27,7 +27,7 @@ final class SkuStockSchema
                     ->schema(self::schema(tenantBranch: $tenantBranch))
                     ->columns(2)
                     ->columnSpan([
-                        'lg' => fn (?SkuStock $record) => $record === null ? 3 : 2,
+                        'lg' => fn (?SkuStock $record) => null === $record ? 3 : 2,
                     ]),
                 Forms\Components\Section::make()
                     ->schema([
@@ -45,7 +45,7 @@ final class SkuStockSchema
             ->columns(3);
     }
 
-    public static function schema(bool $hasSku = true, Branch $tenantBranch = null): array
+    public static function schema(bool $hasSku = true, ?Branch $tenantBranch = null): array
     {
         return [
             Forms\Components\Select::make('sku_id')
@@ -65,13 +65,13 @@ final class SkuStockSchema
                     $get,
                 ) {
 
-                    if ($record !== null) {
+                    if (null !== $record) {
                         return;
                     }
 
                     $brandId = $tenantBranch?->getKey() ?? $get('branch_id');
 
-                    if ($brandId === null) {
+                    if (null === $brandId) {
                         return;
                     }
 
@@ -95,7 +95,7 @@ final class SkuStockSchema
                 ->preload()
                 ->required()
                 ->disabledOn('edit')
-                ->visible($tenantBranch === null),
+                ->visible(null === $tenantBranch),
 
             Forms\Components\Radio::make('type')
                 ->translateLabel()

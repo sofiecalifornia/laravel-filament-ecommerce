@@ -50,7 +50,7 @@ class ActivityResource extends Resource
                     ->translateLabel()
                     ->columnSpanFull()
                     ->formatStateUsing(function (Activity $record): string {
-                        if ($record->causer === null) {
+                        if (null === $record->causer) {
                             return '--';
                         }
 
@@ -66,7 +66,7 @@ class ActivityResource extends Resource
                 Forms\Components\TextInput::make('subject_type')
                     ->formatStateUsing(
                         function (?string $state): string {
-                            if ($state === null) {
+                            if (null === $state) {
                                 return '--';
                             }
 

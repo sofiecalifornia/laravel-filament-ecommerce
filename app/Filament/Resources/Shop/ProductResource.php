@@ -67,7 +67,7 @@ class ProductResource extends Resource
                                                     ->unique(ignoreRecord: true)
                                                     ->afterStateUpdated(
                                                         function (Forms\Set $set, string $state, ?Product $record): void {
-                                                            if ($record !== null) {
+                                                            if (null !== $record) {
                                                                 return;
                                                             }
                                                             $set(

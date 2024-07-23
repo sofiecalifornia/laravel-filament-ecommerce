@@ -40,7 +40,7 @@ class LatestOrders extends TableWidget implements HasPermissionWidgets
                 Tables\Actions\Action::make('view')
                     ->translateLabel()
                     ->authorize('view')
-                    ->url(fn (Order $record): string => match (TenantHelper::getBranch() === null) {
+                    ->url(fn (Order $record): string => match (null === TenantHelper::getBranch()) {
                         true => MainOrderResourceAlias::getUrl('view', ['record' => $record]),
                         default => BranchOrderResourceAlias::getUrl('view', ['record' => $record]),
                     }),

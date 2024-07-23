@@ -51,7 +51,7 @@ class BrandResource extends Resource
                             ->multiple()
                             ->reorderable()
                             ->maxFiles(5),
-                    ])->columnSpan(['lg' => fn (?Brand $record) => $record === null ? 3 : 2]),
+                    ])->columnSpan(['lg' => fn (?Brand $record) => null === $record ? 3 : 2]),
                 Forms\Components\Section::make()
                     ->schema([
                         Forms\Components\Placeholder::make('created_at')
