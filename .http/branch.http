@@ -1,3 +1,0 @@
-### Get All Branches
-GET {{ host }}/branches
-Accept: application/json
