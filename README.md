@@ -55,3 +55,5 @@ The project is now installed and ready to use. You can access it by navigating t
 username: ecommerce@lloricode.com
 password: secret
 ```
+
+[<img src="https://api.gitsponsors.com/api/badge/img?id=831815302" height="20">](https://api.gitsponsors.com/api/badge/link?p=jD/qCRlMkLSrnEvnNtpSZq4j0Au7yA5y50+Lajm0kNC77nSKYKNHFUpo+tyOCBwrkKKBult3YqSn92SJq1lfwfCwPINImUWCHdXtoDpm+7FvRkPZAxf00usbW1DY05QJ)
